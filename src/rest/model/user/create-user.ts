@@ -1,0 +1,40 @@
+import { ApiProperty } from "@nestjs/swagger";
+import {
+  IsDateString,
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUUID,
+} from "class-validator";
+
+export class CreateUser {
+  @ApiProperty()
+  @IsUUID()
+  id: string;
+
+  @ApiProperty()
+  @IsString()
+  username: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  lastName: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  firstName: string;
+
+  @ApiProperty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({ format: "date-time" })
+  @IsDateString()
+  createdAt: string;
+
+  @ApiProperty({ format: "date-time" })
+  @IsDateString()
+  updatedAt: string;
+}

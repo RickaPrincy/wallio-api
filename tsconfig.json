@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "allowJs": true,
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2021",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@wallio/auth": ["./src/auth"],
+      "@wallio/rest": ["./src/rest"],
+      "@wallio/entities": ["./src/entities"],
+      "@wallio/services": ["./src/services"],
+      "@wallio/modules": ["./src/modules"],
+      "@wallio/auth/*": ["./src/auth/*"],
+      "@wallio/rest/*": ["./src/rest/*"],
+      "@wallio/entities/*": ["./src/entities/*"],
+      "@wallio/services/*": ["./src/services/*"],
+      "@wallio/modules/*": ["./src/modules/*"]
+    }
+  }
+}
