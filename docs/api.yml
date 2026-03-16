@@ -93,10 +93,6 @@ paths:
             default: 10
             minimum: 1
             maximum: 500
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
       responses:
         '200':
           description: ''
@@ -136,11 +132,7 @@ paths:
   /user:
     post:
       operationId: createUser
-      parameters:
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
+      parameters: []
       requestBody:
         required: true
         content:
@@ -183,365 +175,11 @@ paths:
       summary: ''
       tags:
         - User
-  /roles:
-    get:
-      operationId: getRoles
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-        - name: pageSize
-          required: false
-          in: query
-          schema:
-            type: number
-            default: 10
-            minimum: 1
-            maximum: 500
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Role'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Role
-  /roles/{id}:
-    get:
-      operationId: getRoleById
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: page
-          required: false
-          in: query
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-        - name: pageSize
-          required: false
-          in: query
-          schema:
-            type: number
-            default: 10
-            minimum: 1
-            maximum: 500
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Role
-  /role:
-    post:
-      operationId: createRole
-      parameters:
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateRole'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Role'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Role
-  /companies:
-    get:
-      operationId: getCompanies
-      parameters:
-        - name: page
-          required: false
-          in: query
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-        - name: pageSize
-          required: false
-          in: query
-          schema:
-            type: number
-            default: 10
-            minimum: 1
-            maximum: 500
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Company'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Company
-  /companies/{id}:
-    get:
-      operationId: getCompanyById
-      parameters:
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: page
-          required: false
-          in: query
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-        - name: pageSize
-          required: false
-          in: query
-          schema:
-            type: number
-            default: 10
-            minimum: 1
-            maximum: 500
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Company'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Company
-  /company:
-    post:
-      operationId: createCompany
-      parameters:
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CreateCompany'
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Company'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Company
   /whoami:
     get:
       description: Tell who you are
       operationId: whoami
-      parameters:
-        - name: x-company-id
-          in: header
-          schema:
-            type: string
+      parameters: []
       responses:
         '200':
           description: ''
@@ -579,18 +217,14 @@ paths:
       tags:
         - Security
 info:
-  title: core-api
-  description: wallio core-api
+  title: wallio-api
+  description: wallio
   version: 0.0.1
   contact: {}
 tags:
   - name: Health
     description: ''
   - name: User
-    description: ''
-  - name: Company
-    description: ''
-  - name: Role
     description: ''
   - name: Security
     description: ''
@@ -627,42 +261,6 @@ components:
         - statusCode
         - message
         - error
-    Role:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-      required:
-        - id
-        - name
-        - createdAt
-        - updatedAt
-    UserRole:
-      type: object
-      properties:
-        id:
-          type: string
-        role:
-          $ref: '#/components/schemas/Role'
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-      required:
-        - id
-        - role
-        - createdAt
-        - updatedAt
     User:
       type: object
       properties:
@@ -675,12 +273,10 @@ components:
           type: string
         lastName:
           type: string
-        avatarFileKey:
+        avatarUrl:
           type: string
         email:
           type: string
-        userRole:
-          $ref: '#/components/schemas/UserRole'
         createdAt:
           type: string
           format: date-time
@@ -692,9 +288,8 @@ components:
         - username
         - firstName
         - lastName
-        - avatarFileKey
+        - avatarUrl
         - email
-        - userRole
         - createdAt
         - updatedAt
     CreateUser:
@@ -722,67 +317,6 @@ components:
         - lastName
         - firstName
         - email
-        - createdAt
-        - updatedAt
-    CreateRole:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-      required:
-        - id
-        - name
-        - createdAt
-        - updatedAt
-    Company:
-      type: object
-      properties:
-        name:
-          type: string
-        url:
-          type: string
-        displayName:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-      required:
-        - name
-        - url
-        - displayName
-        - createdAt
-        - updatedAt
-    CreateCompany:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        name:
-          type: string
-        displayName:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-      required:
-        - id
-        - name
-        - displayName
         - createdAt
         - updatedAt
     Whoami:

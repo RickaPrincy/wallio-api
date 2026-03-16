@@ -14,8 +14,6 @@ function setupSwagger<T>(app: INestApplication<T>) {
     .addServer("http://localhost:3000")
     .addTag("Health")
     .addTag("User")
-    .addTag("Company")
-    .addTag("Role")
     .addTag("Security")
     .addBearerAuth()
     .build();

@@ -26,7 +26,7 @@ export class UserController {
   ) {}
 
   @Get("/users/:id")
-  @Authenticated({ selfMatcher: "id", checkCompany: false })
+  @Authenticated({ selfMatcher: "id" })
   @ApiPagination()
   @ApiRequiredSpec({ operationId: "getUserById", type: RestUser })
   async getUserById(@Param("id") userId: string): Promise<RestUser> {
@@ -38,7 +38,7 @@ export class UserController {
   }
 
   @Post("/user")
-  @Authenticated({ checkCompany: false })
+  @Authenticated()
   @ApiRequiredSpec({ operationId: "createUser", type: RestUser })
   async createUser(
     @AuthenticatedFirebaseUser() firebaseUser: FirebaseUser,
