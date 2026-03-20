@@ -78,21 +78,6 @@ paths:
           in: path
           schema:
             type: string
-        - name: page
-          required: false
-          in: query
-          schema:
-            type: number
-            minimum: 1
-            default: 1
-        - name: pageSize
-          required: false
-          in: query
-          schema:
-            type: number
-            default: 10
-            minimum: 1
-            maximum: 500
       responses:
         '200':
           description: ''
@@ -128,8 +113,8 @@ paths:
         - bearer: []
       summary: ''
       tags:
-        - User
-  /user:
+        - Users
+  /users:
     post:
       operationId: createUser
       parameters: []
@@ -174,7 +159,162 @@ paths:
         - bearer: []
       summary: ''
       tags:
-        - User
+        - Users
+  /users/{userId}/wallets/{id}:
+    get:
+      operationId: getWalletById
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: id
+          required: true
+          in: path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+      security:
+        - bearer: []
+      summary: ''
+      tags:
+        - Wallets
+  /users/{userId}/wallets:
+    post:
+      operationId: createWallet
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Wallet'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+      security:
+        - bearer: []
+      summary: ''
+      tags:
+        - Wallets
+    get:
+      operationId: getWalletsByUserId
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          schema:
+            type: string
+        - name: page
+          required: false
+          in: query
+          schema:
+            type: number
+            minimum: 1
+            default: 1
+        - name: pageSize
+          required: false
+          in: query
+          schema:
+            type: number
+            default: 10
+            minimum: 1
+            maximum: 500
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Wallet'
+        '400':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '403':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+      security:
+        - bearer: []
+      summary: ''
+      tags:
+        - Wallets
   /whoami:
     get:
       description: Tell who you are
@@ -224,7 +364,9 @@ info:
 tags:
   - name: Health
     description: ''
-  - name: User
+  - name: Users
+    description: ''
+  - name: Wallets
     description: ''
   - name: Security
     description: ''
@@ -319,6 +461,33 @@ components:
         - email
         - createdAt
         - updatedAt
+    WalletType:
+      type: string
+      enum:
+        - CASH
+        - BANK
+        - MOBILE_MONEY
+    Wallet:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        type:
+          allOf:
+            - $ref: '#/components/schemas/WalletType'
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - type
+        - createdAt
     Whoami:
       type: object
       properties:
