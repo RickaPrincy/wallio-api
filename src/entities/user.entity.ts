@@ -5,7 +5,9 @@ import {
   Entity,
   PrimaryColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Wallet } from "./wallet.entity";
 
 @Entity()
 export class User {
@@ -49,4 +51,7 @@ export class User {
 
   @DeleteDateColumn({ name: "deleted_at", nullable: true })
   deletedAt?: string;
+
+  @OneToMany(() => Wallet, (wallet) => wallet.user)
+  wallets: Wallet[];
 }

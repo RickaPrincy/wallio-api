@@ -2,9 +2,9 @@ import { ConfigService } from "@nestjs/config";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Dummy, User } from "@wallio/entities";
+import { Dummy, User, Wallet } from "@wallio/entities";
 
-export const ENTITIES = [Dummy, User];
+export const ENTITIES = [Dummy, User, Wallet];
 
 @Module({
   imports: [

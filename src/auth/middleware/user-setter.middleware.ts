@@ -1,4 +1,4 @@
-import { UserService } from "@wallio/services/user";
+import { UserService } from "@wallio/services";
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { NextFunction, Request, Response } from "express";
 

@@ -1,6 +1,6 @@
 import { Dummy } from "@wallio/entities";
-import { HealthController } from "@wallio/rest/controller/health";
-import { HealthService } from "@wallio/services/health";
+import { HealthController } from "@wallio/rest/controller";
+import { HealthService } from "@wallio/services";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 

@@ -9,6 +9,7 @@ import {
   FirebaseUserSetterMiddleware,
   UserSetterMiddleware,
 } from "./auth/middleware";
+import { WalletModule } from "./modules/wallet.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {
     FirebaseModule,
     HealthModule,
     UserModule,
+    WalletModule,
     AuthModule,
   ],
 })

@@ -4,7 +4,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Dummy as DomainEntity } from "@wallio/entities";
 import { ApiPagination, ApiRequiredSpec } from "@wallio/rest/swagger/decorator";
 import { Pagination, PaginationParams } from "@wallio/rest/decorator";
-import { HealthService } from "@wallio/services/health";
+import { HealthService } from "@wallio/services";
 
 @Controller()
 @ApiTags("Health")

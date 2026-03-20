@@ -13,7 +13,8 @@ function setupSwagger<T>(app: INestApplication<T>) {
     .setVersion("0.0.1")
     .addServer("http://localhost:3000")
     .addTag("Health")
-    .addTag("User")
+    .addTag("Users")
+    .addTag("Wallets")
     .addTag("Security")
     .addBearerAuth()
     .build();

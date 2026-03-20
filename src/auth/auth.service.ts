@@ -3,7 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { User as DomainUser } from "@wallio/entities";
 import { Whoami } from "./model";
 import { User as RestUser } from "@wallio/rest/model/user";
-import { UserMapper } from "@wallio/rest/mapper/user";
+import { UserMapper } from "@wallio/rest/mapper";
 import { FirebaseUser } from "@wallio/services/firebase";
 
 @Injectable()
