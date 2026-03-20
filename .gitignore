@@ -58,3 +58,4 @@ files/*.png
 files/*.jpg
 files/*.jpeg
 migrations/
+gen

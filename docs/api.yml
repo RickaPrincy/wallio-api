@@ -213,7 +213,12 @@ paths:
   /users/{userId}/wallets:
     post:
       operationId: createWallet
-      parameters: []
+      parameters:
+        - name: userId
+          required: true
+          in: path
+          schema:
+            type: string
       requestBody:
         required: true
         content:

@@ -42,6 +42,7 @@ export class WalletController {
   @Authenticated({ selfMatcher: "userId" })
   @ApiRequiredSpec({ operationId: "createWallet", type: RestWallet })
   async createWallet(
+    @Param("userId") _userId: string,
     @AuthenticatedUser() user: User,
     @Body() createWallet: RestWallet
   ): Promise<RestWallet> {
