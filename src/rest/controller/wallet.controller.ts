@@ -68,8 +68,8 @@ export class WalletController {
       },
     });
     return Promise.all(
-      domainWallets.map((domainWallet) =>
-        this.walletMapper.toRest(domainWallet)
+      domainWallets.map(
+        async (domainWallet) => await this.walletMapper.toRest(domainWallet)
       )
     );
   }

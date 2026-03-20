@@ -1,6 +1,7 @@
 import { Test } from "@nestjs/testing";
 import { GenericContainer, StartedTestContainer } from "testcontainers";
 import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 
 import {
   FirebaseAppService,
@@ -24,11 +25,18 @@ export const createTestApp = async (): Promise<TestApp> => {
   const { container, dbUrl, startedContainer } =
     await createPostgresContainer();
 
-  process.env.DATABASE_URL = dbUrl;
-
   const moduleFixture = await Test.createTestingModule({
     imports: [AppModule, SeederModule],
   })
+    .overrideProvider(ConfigService)
+    .useValue({
+      get: (key: string) => {
+        if (key === "DATABASE_URL") {
+          return dbUrl;
+        }
+        return process.env[key];
+      },
+    })
     .overrideProvider(FirebaseAppService)
     .useValue(null)
     .overrideProvider(FirebaseAuthService)
@@ -46,8 +54,8 @@ export const createTestApp = async (): Promise<TestApp> => {
     container,
     startedContainer,
     close: async () => {
-      startedContainer.stop();
-      app.close();
+      await app.close();
+      await startedContainer.stop();
     },
   };
 };

@@ -1,9 +1,8 @@
 import { FirebaseUser } from "@wallio/services/firebase";
-import { v4 as uuid } from "uuid";
 
 export const JOHN_FIREBASE_USER: FirebaseUser = {
   emailVerified: true,
-  uid: uuid(),
+  uid: "john_uid",
   displayName: "John Doe",
   email: "johndoe@gmail.com",
   photoURL: "https://dummy.com",
@@ -11,7 +10,7 @@ export const JOHN_FIREBASE_USER: FirebaseUser = {
 
 export const JANE_FIREBASE_USER: FirebaseUser = {
   emailVerified: true,
-  uid: uuid(),
+  uid: "jane_uid",
   displayName: "Jane Dane",
   email: "janedane@gmail.com",
   photoURL: "https://dummy.com",

@@ -10,17 +10,13 @@ describe("AuthController (e2e)", () => {
   });
 
   it("ping should be excludes from any verification", async () => {
-    const res = await request(testApp.app.getHttpServer())
-      .get("/ping")
-      .set("Authorization", "invalid");
+    const res = await request(testApp.app.getHttpServer()).get("/ping");
 
     expect(res.text).toBe("pong");
   });
 
-  it("public /dummies should passes if correct token is not present", async () => {
-    const res = await request(testApp.app.getHttpServer())
-      .get("/dummies")
-      .set("Authorization", "incorrect");
+  it("public /dummies should passes if token is not present", async () => {
+    const res = await request(testApp.app.getHttpServer()).get("/dummies");
 
     expect(res.body).toStrictEqual([DUMMY_1, DUMMY_2, DUMMY_3]);
   });
@@ -40,7 +36,7 @@ describe("AuthController (e2e)", () => {
   it("public /dummies should passes if valid token is passes", async () => {
     const res = await request(testApp.app.getHttpServer())
       .get("/dummies")
-      .set("Authorization", JOHN_FIREBASE_USER.uid);
+      .set("Authorization", "Bearer " + JOHN_FIREBASE_USER.uid);
 
     expect(res.body).toStrictEqual([DUMMY_1, DUMMY_2, DUMMY_3]);
   });

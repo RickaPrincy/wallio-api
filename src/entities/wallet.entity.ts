@@ -4,6 +4,7 @@ import {
   ManyToOne,
   CreateDateColumn,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { User } from "./user.entity";
 
@@ -39,4 +40,13 @@ export class Wallet {
 
   @CreateDateColumn({ name: "created_at" })
   createdAt: string;
+
+  @UpdateDateColumn({
+    name: "updated_at",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+    nullable: false,
+  })
+  updatedAt: string;
 }

@@ -10,6 +10,6 @@ export class DummySeeder extends AbstractSeeder {
 
   async run() {
     const repository = this.datasource.getRepository(Dummy);
-    repository.save([DUMMY_1, DUMMY_2, DUMMY_3]);
+    await repository.save([DUMMY_1, DUMMY_2, DUMMY_3]);
   }
 }
