@@ -17,11 +17,8 @@ export class User {
   @Column({ unique: true, nullable: false })
   firebaseId: string;
 
-  @Column({ unique: true, nullable: false })
-  username: string;
-
-  @Column({ name: "first_name", nullable: true })
-  firstName?: string;
+  @Column({ name: "first_name", nullable: false })
+  firstName: string;
 
   @Column({ name: "last_name", nullable: true })
   lastName?: string;

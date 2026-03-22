@@ -33,7 +33,6 @@ export class UserService {
 
   async createUser(user: User): Promise<User> {
     const existing = await this.findAll({ page: 1, pageSize: 1 }, [
-      { username: user.username },
       { id: user.id },
       { email: user.email },
       { firebaseId: user.firebaseId },

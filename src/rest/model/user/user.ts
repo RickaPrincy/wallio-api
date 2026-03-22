@@ -5,10 +5,7 @@ export class User {
   id: string;
 
   @ApiProperty()
-  username: string;
-
-  @ApiProperty()
-  firstName?: string;
+  firstName: string;
 
   @ApiProperty()
   lastName?: string;

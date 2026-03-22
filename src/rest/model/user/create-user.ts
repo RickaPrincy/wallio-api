@@ -13,16 +13,11 @@ export class CreateUser {
   id: string;
 
   @ApiProperty()
-  @IsString()
-  username: string;
-
-  @ApiProperty()
   @IsOptional()
   @IsString()
-  lastName: string;
+  lastName?: string;
 
   @ApiProperty()
-  @IsOptional()
   @IsString()
   firstName: string;
 
