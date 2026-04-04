@@ -58,7 +58,7 @@ export class WalletController {
   @Get("/users/:userId/wallets")
   @Authenticated({ selfMatcher: "userId" })
   @ApiPagination()
-  @ApiRequiredSpec({ operationId: "getWalletsByUserId", type: RestWallet })
+  @ApiRequiredSpec({ operationId: "getWalletsByUserId", type: [RestWallet] })
   async getWalletsByUserId(
     @Param("userId") userId: string,
     @Pagination() pagination: PaginationParams
