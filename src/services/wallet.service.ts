@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { DataSource, In, Repository } from "typeorm";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -8,10 +8,12 @@ import { PaginationParams } from "@wallio/rest/decorator";
 import { UPDATED_AT_CREATED_AT_ORDER_BY } from "@wallio/services/common/default-order-by";
 import { findByCriteria } from "@wallio/services/common/find-by-criteria";
 
+const MAX_WALLETS = 100;
 @Injectable()
 export class WalletService {
   constructor(
-    @InjectRepository(Wallet) private readonly repository: Repository<Wallet>
+    @InjectRepository(Wallet) private readonly repository: Repository<Wallet>,
+    private readonly dataSource: DataSource
   ) {}
 
   async findAll(pagination: PaginationParams, criteria: Criteria<Wallet>) {
@@ -20,23 +22,39 @@ export class WalletService {
       criteria,
       pagination,
       order: UPDATED_AT_CREATED_AT_ORDER_BY,
+      withDeleted: true,
     });
   }
 
-  async findById(id: string, userId: string) {
-    return this.repository.findOneBy({ id, user: { id: userId } });
+  async saveAll(wallets: Wallet[]): Promise<Wallet[]> {
+    return await this.dataSource.transaction(async (manager) => {
+      return await manager.save(Wallet, wallets);
+    });
   }
 
-  async createWallet(wallet: Wallet): Promise<Wallet> {
-    const existing = await this.findAll({ page: 1, pageSize: 1 }, [
-      { id: wallet.id },
-    ]);
+  async findByIds(userId: string, walletIds: string[]) {
+    const uniqueWalletIds = Array.from(new Set(walletIds));
 
-    if (existing && existing.length > 0) {
-      throw new BadRequestException(`Wallet.ID already exists`);
+    if (uniqueWalletIds.length > MAX_WALLETS) {
+      throw new BadRequestException("Too many wallets requested");
     }
 
-    const walletToCreate = this.repository.create(wallet);
-    return this.repository.save(walletToCreate);
+    const wallets = await this.findAll(
+      { page: 1, pageSize: uniqueWalletIds.length },
+      {
+        id: In(uniqueWalletIds),
+        user: {
+          id: userId,
+        },
+      }
+    );
+
+    if (wallets.length !== uniqueWalletIds.length) {
+      throw new BadRequestException(
+        "One or more wallets are invalid or do not belong to you"
+      );
+    }
+
+    return wallets;
   }
 }

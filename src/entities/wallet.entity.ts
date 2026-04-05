@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
 import { User } from "./user.entity";
+import { BigNumber } from "bignumber.js";
 
 export enum WalletType {
   CASH = "CASH",
@@ -24,6 +26,13 @@ export class Wallet {
 
   @Column({ nullable: true })
   description?: string;
+
+  @Column({
+    type: "decimal",
+    precision: 12,
+    scale: 2,
+  })
+  balance: string;
 
   @Column({
     type: "enum",
@@ -49,4 +58,11 @@ export class Wallet {
     nullable: false,
   })
   updatedAt: string;
+
+  @DeleteDateColumn({ name: "deleted_at" })
+  deletedAt?: string;
+
+  getBalance() {
+    return new BigNumber(this.balance);
+  }
 }

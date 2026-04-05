@@ -12,19 +12,23 @@ export class WalletMapper {
     private readonly walletRepository: Repository<DomainWallet>
   ) {}
 
-  async toRest(wallet: DomainWallet): Promise<RestWallet> {
-    if (!wallet) {
-      return null;
-    }
+  async toRestList(wallets: DomainWallet[]): Promise<RestWallet[]> {
+    return Promise.all(wallets.map((wallet) => this.toRest(wallet)));
+  }
 
+  async toRest(wallet: DomainWallet): Promise<RestWallet> {
     const { user: _user, ...restWallet } = wallet;
     return restWallet;
   }
 
-  async createToDomain(
-    createWallet: RestWallet,
+  async toDomainList(
+    wallets: RestWallet[],
     user: User
-  ): Promise<DomainWallet> {
-    return this.walletRepository.create({ ...createWallet, user });
+  ): Promise<DomainWallet[]> {
+    return Promise.all(wallets.map((wallet) => this.toDomain(wallet, user)));
+  }
+
+  async toDomain(restWallet: RestWallet, user: User): Promise<DomainWallet> {
+    return this.walletRepository.create({ ...restWallet, user });
   }
 }

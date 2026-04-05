@@ -4,9 +4,9 @@ import { ConfigModule } from "@nestjs/config";
 import { AuthModule } from "./auth";
 import { DatabaseModule } from "./modules/database";
 import {
-  BalanceHistoryModule,
   FirebaseModule,
   HealthModule,
+  TransactionModule,
   UserModule,
 } from "./modules";
 import {
@@ -27,7 +27,7 @@ import { WalletModule } from "./modules/wallet.module";
     UserModule,
     WalletModule,
     AuthModule,
-    BalanceHistoryModule,
+    TransactionModule,
   ],
 })
 export class AppModule {

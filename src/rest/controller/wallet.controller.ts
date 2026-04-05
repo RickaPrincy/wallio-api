@@ -1,15 +1,8 @@
-import {
-  Body,
-  Controller,
-  Get,
-  NotFoundException,
-  Param,
-  Post,
-} from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { Body, Controller, Get, Param, Put } from "@nestjs/common";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { ApiPagination, ApiRequiredSpec } from "@wallio/rest/swagger/decorator";
 import { WalletService } from "@wallio/services";
-import { Wallet as RestWallet } from "@wallio/rest/model/wallet";
+import { Wallet as RestWallet } from "@wallio/rest/model";
 import { WalletMapper } from "@wallio/rest/mapper";
 import { Authenticated } from "@wallio/auth/decorator";
 import { AuthenticatedUser } from "@wallio/auth/decorator/retriever";
@@ -24,35 +17,20 @@ export class WalletController {
     private readonly walletMapper: WalletMapper
   ) {}
 
-  @Get("/users/:userId/wallets/:id")
+  @Put("/users/:userId/wallets")
+  @ApiBody({ type: [RestWallet] })
   @Authenticated({ selfMatcher: "userId" })
-  @ApiRequiredSpec({ operationId: "getWalletById", type: RestWallet })
-  async getWalletById(
-    @Param("userId") userId: string,
-    @Param("id") walletId: string
-  ): Promise<RestWallet> {
-    const domainWallet = await this.walletService.findById(walletId, userId);
-    if (!domainWallet) {
-      throw new NotFoundException(`The wallet ${walletId} does not exist.`);
-    }
-    return this.walletMapper.toRest(domainWallet);
-  }
-
-  @Post("/users/:userId/wallets")
-  @Authenticated({ selfMatcher: "userId" })
-  @ApiRequiredSpec({ operationId: "createWallet", type: RestWallet })
+  @ApiRequiredSpec({ operationId: "saveAll", type: [RestWallet] })
   async createWallet(
     @Param("userId") _userId: string,
     @AuthenticatedUser() user: User,
-    @Body() createWallet: RestWallet
-  ): Promise<RestWallet> {
-    const domainWallet = await this.walletMapper.createToDomain(
-      createWallet,
-      user
-    );
-    const createdWallet = await this.walletService.createWallet(domainWallet);
+    @Body() wallets: RestWallet[]
+  ): Promise<RestWallet[]> {
+    const domainWallets = await this.walletMapper.toDomainList(wallets, user);
 
-    return this.walletMapper.toRest(createdWallet);
+    const createdWallets = await this.walletService.saveAll(domainWallets);
+
+    return this.walletMapper.toRestList(createdWallets);
   }
 
   @Get("/users/:userId/wallets")
@@ -68,10 +46,7 @@ export class WalletController {
         id: userId,
       },
     });
-    return Promise.all(
-      domainWallets.map(
-        async (domainWallet) => await this.walletMapper.toRest(domainWallet)
-      )
-    );
+
+    return this.walletMapper.toRestList(domainWallets);
   }
 }

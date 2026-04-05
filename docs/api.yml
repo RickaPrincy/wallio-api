@@ -160,59 +160,9 @@ paths:
       summary: ''
       tags:
         - Users
-  /users/{userId}/wallets/{id}:
-    get:
-      operationId: getWalletById
-      parameters:
-        - name: userId
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: id
-          required: true
-          in: path
-          schema:
-            type: string
-      responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Wallet'
-        '400':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '403':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '404':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-        '500':
-          description: ''
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ApiResponseError'
-      security:
-        - bearer: []
-      summary: ''
-      tags:
-        - Wallets
   /users/{userId}/wallets:
-    post:
-      operationId: createWallet
+    put:
+      operationId: saveAll
       parameters:
         - name: userId
           required: true
@@ -224,14 +174,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Wallet'
+              type: array
+              items:
+                $ref: '#/components/schemas/Wallet'
       responses:
         '200':
           description: ''
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Wallet'
+                type: array
+                items:
+                  $ref: '#/components/schemas/Wallet'
         '400':
           description: ''
           content:
@@ -363,16 +317,11 @@ paths:
       summary: ''
       tags:
         - Security
-  /users/{userId}/wallets/{walletId}/balances:
-    post:
-      operationId: createBalances
+  /users/{userId}/transactions:
+    put:
+      operationId: saveAll
       parameters:
         - name: userId
-          required: true
-          in: path
-          schema:
-            type: string
-        - name: walletId
           required: true
           in: path
           schema:
@@ -384,7 +333,7 @@ paths:
             schema:
               type: array
               items:
-                $ref: '#/components/schemas/CreateBalanceHistory'
+                $ref: '#/components/schemas/Transaction'
       responses:
         '200':
           description: ''
@@ -393,7 +342,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BalanceHistory'
+                  $ref: '#/components/schemas/Transaction'
         '400':
           description: ''
           content:
@@ -422,11 +371,11 @@ paths:
         - bearer: []
       summary: ''
       tags:
-        - Wallets
+        - Transactions
     get:
-      operationId: getBalancesByWalletId
+      operationId: getTransactionsByUserId
       parameters:
-        - name: walletId
+        - name: userId
           required: true
           in: path
           schema:
@@ -454,7 +403,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/BalanceHistory'
+                  $ref: '#/components/schemas/Transaction'
         '400':
           description: ''
           content:
@@ -483,7 +432,7 @@ paths:
         - bearer: []
       summary: ''
       tags:
-        - Wallets
+        - Transactions
 info:
   title: wallio-api
   description: wallio
@@ -495,6 +444,8 @@ tags:
   - name: Users
     description: ''
   - name: Wallets
+    description: ''
+  - name: Transactions
     description: ''
   - name: Security
     description: ''
@@ -597,6 +548,8 @@ components:
           format: uuid
         name:
           type: string
+        balance:
+          type: string
         description:
           type: string
         type:
@@ -605,11 +558,20 @@ components:
         createdAt:
           type: string
           format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
+          type: string
+          format: date-time
       required:
         - id
         - name
+        - balance
         - type
         - createdAt
+        - updatedAt
+        - deletedAt
     Whoami:
       type: object
       properties:
@@ -623,43 +585,43 @@ components:
         - token
         - user
         - isVerified
-    CreateBalanceHistory:
+    TransactionType:
+      type: string
+      enum:
+        - CREDIT
+        - DEBIT
+    Transaction:
       type: object
       properties:
         id:
           type: string
           format: uuid
         amount:
-          type: number
-          example: 1500.75
+          type: string
+          example: '150.50'
+        type:
+          allOf:
+            - $ref: '#/components/schemas/TransactionType'
+        description:
+          type: string
         createdAt:
           type: string
           format: date-time
-      required:
-        - id
-        - amount
-        - createdAt
-    BalanceHistory:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        amount:
-          type: number
-          example: 1500.75
-        balanceBefore:
-          type: number
-          example: 1000
         walletId:
           type: string
           format: uuid
-        createdAt:
+        updatedAt:
+          type: string
+          format: date-time
+        deletedAt:
           type: string
           format: date-time
       required:
         - id
         - amount
-        - balanceBefore
-        - walletId
+        - type
+        - description
         - createdAt
+        - walletId
+        - updatedAt
+
