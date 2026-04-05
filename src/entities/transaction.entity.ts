@@ -11,10 +11,6 @@ import {
 import { Wallet } from "./wallet.entity";
 import { BigNumber } from "bignumber.js";
 
-export enum TransactionType {
-  CREDIT = "CREDIT",
-  DEBIT = "DEBIT",
-}
 
 @Entity({ name: "transaction" })
 export class Transaction {
@@ -27,12 +23,6 @@ export class Transaction {
     scale: 2,
   })
   amount: string;
-
-  @Column({
-    type: "enum",
-    enum: TransactionType,
-  })
-  type: TransactionType;
 
   @Column({ nullable: false })
   description: string;

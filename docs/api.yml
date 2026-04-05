@@ -585,11 +585,6 @@ components:
         - token
         - user
         - isVerified
-    TransactionType:
-      type: string
-      enum:
-        - CREDIT
-        - DEBIT
     Transaction:
       type: object
       properties:
@@ -599,9 +594,6 @@ components:
         amount:
           type: string
           example: '150.50'
-        type:
-          allOf:
-            - $ref: '#/components/schemas/TransactionType'
         description:
           type: string
         createdAt:
@@ -619,9 +611,7 @@ components:
       required:
         - id
         - amount
-        - type
         - description
         - createdAt
         - walletId
         - updatedAt
-
