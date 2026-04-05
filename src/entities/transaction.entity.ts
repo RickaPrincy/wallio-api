@@ -11,7 +11,6 @@ import {
 import { Wallet } from "./wallet.entity";
 import { BigNumber } from "bignumber.js";
 
-
 @Entity({ name: "transaction" })
 export class Transaction {
   @PrimaryGeneratedColumn("uuid")

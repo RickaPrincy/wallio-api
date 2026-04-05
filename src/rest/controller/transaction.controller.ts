@@ -21,7 +21,10 @@ export class TransactionController {
   @Put("/users/:userId/transactions")
   @ApiBody({ type: [RestTransaction] })
   @Authenticated({ selfMatcher: "userId" })
-  @ApiRequiredSpec({ operationId: "saveAll", type: [RestTransaction] })
+  @ApiRequiredSpec({
+    operationId: "saveAllTransactions",
+    type: [RestTransaction],
+  })
   async createTransaction(
     @Param("userId") _userId: string,
     @AuthenticatedUser() user: User,

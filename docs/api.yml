@@ -162,7 +162,7 @@ paths:
         - Users
   /users/{userId}/wallets:
     put:
-      operationId: saveAll
+      operationId: saveAllWallets
       parameters:
         - name: userId
           required: true
@@ -319,7 +319,7 @@ paths:
         - Security
   /users/{userId}/transactions:
     put:
-      operationId: saveAll
+      operationId: saveAllTransactions
       parameters:
         - name: userId
           required: true

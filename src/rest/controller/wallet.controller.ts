@@ -20,7 +20,7 @@ export class WalletController {
   @Put("/users/:userId/wallets")
   @ApiBody({ type: [RestWallet] })
   @Authenticated({ selfMatcher: "userId" })
-  @ApiRequiredSpec({ operationId: "saveAll", type: [RestWallet] })
+  @ApiRequiredSpec({ operationId: "saveAllWallets", type: [RestWallet] })
   async createWallet(
     @Param("userId") _userId: string,
     @AuthenticatedUser() user: User,

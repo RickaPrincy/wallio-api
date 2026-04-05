@@ -16,7 +16,7 @@ export class Transaction {
   @IsNumberString()
   @ApiProperty({ example: "150.50" })
   amount: string;
-  
+
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
