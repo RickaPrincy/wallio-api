@@ -2,8 +2,7 @@ import { ConfigService } from "@nestjs/config";
 import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
-import { Dummy, User, Wallet } from "@wallio/entities";
-import { Transaction } from "typeorm";
+import { Dummy, User, Wallet, Transaction } from "@wallio/entities";
 
 export const ENTITIES = [Dummy, User, Wallet, Transaction];
 
