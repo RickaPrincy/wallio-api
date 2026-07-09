@@ -6,7 +6,9 @@ import { DatabaseModule } from "./modules/database";
 import {
   FirebaseModule,
   HealthModule,
+  InitInfoModule,
   TransactionModule,
+  WalletModule,
   UserModule,
 } from "./modules";
 import {
@@ -14,7 +16,6 @@ import {
   FirebaseUserSetterMiddleware,
   UserSetterMiddleware,
 } from "./auth/middleware";
-import { WalletModule } from "./modules/wallet.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { WalletModule } from "./modules/wallet.module";
     WalletModule,
     AuthModule,
     TransactionModule,
+    InitInfoModule,
   ],
 })
 export class AppModule {

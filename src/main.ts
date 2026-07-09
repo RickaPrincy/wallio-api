@@ -15,6 +15,7 @@ function setupSwagger<T>(app: INestApplication<T>) {
     .addTag("Health")
     .addTag("Users")
     .addTag("Wallets")
+    .addTag("Init")
     .addTag("Transactions")
     .addTag("Security")
     .addBearerAuth()

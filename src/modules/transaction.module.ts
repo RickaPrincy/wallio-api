@@ -10,6 +10,6 @@ import { TransactionMapper } from "@wallio/rest/mapper";
   imports: [TypeOrmModule.forFeature([Transaction]), WalletModule],
   controllers: [TransactionController],
   providers: [TransactionService, TransactionMapper],
-  exports: [TransactionService],
+  exports: [TransactionService, TransactionMapper],
 })
 export class TransactionModule {}
