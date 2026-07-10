@@ -38,6 +38,7 @@ export class InitInfoService {
   }
 
   toInitInfo(wallets: Wallet[], transactions: Transaction[]): InitInfo {
+    console.log("Transactions", transactions);
     const result = new InitInfo();
     result.wallets = wallets;
     result.transactions = transactions;

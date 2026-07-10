@@ -42,6 +42,7 @@ export class Wallet {
   type: WalletType;
 
   @ManyToOne(() => User, (user) => user.wallets, {
+    eager: true,
     nullable: false,
     onDelete: "CASCADE",
   })

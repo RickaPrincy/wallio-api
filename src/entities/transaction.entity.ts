@@ -28,6 +28,7 @@ export class Transaction {
 
   @Index()
   @ManyToOne(() => Wallet, {
+    eager: true,
     nullable: false,
     onDelete: "CASCADE",
   })
