@@ -14,7 +14,7 @@ export class WalletService {
   constructor(
     @InjectRepository(Wallet) private readonly repository: Repository<Wallet>,
     private readonly dataSource: DataSource
-  ) {}
+  ) { }
 
   async findAll(pagination: PaginationParams, criteria: Criteria<Wallet>) {
     return await findByCriteria<Wallet>({
@@ -56,5 +56,12 @@ export class WalletService {
     }
 
     return wallets;
+  }
+  
+  async count(criteria?: Criteria<Wallet>): Promise<number> {
+    return await this.repository.count({
+      where: criteria as any,
+      withDeleted: true,
+    });
   }
 }

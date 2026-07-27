@@ -10,7 +10,7 @@ export class InitInfoService {
   constructor(
     private readonly walletService: WalletService,
     private readonly transactionService: TransactionService
-  ) {}
+  ) { }
 
   async getByUserId(
     userId: string,
@@ -26,11 +26,19 @@ export class InitInfoService {
       return this.toInitInfo(wallets, []);
     }
 
-    const transactions = await this.transactionService.findAll(pagination, {
+    const totalWallets = await this.walletService.count({ user: { id: userId } });
+    const globalSkip = (pagination.page - 1) * pagination.pageSize;
+    const transactionSkip = Math.max(0, globalSkip - totalWallets);
+    const transactionPage = Math.floor(transactionSkip / pagination.pageSize) + 1;
+
+    const adjustedPagination: PaginationParams = {
+      page: transactionPage,
+      pageSize: pagination.pageSize,
+    };
+
+    const transactions = await this.transactionService.findAll(adjustedPagination, {
       wallet: {
-        user: {
-          id: userId,
-        },
+        user: { id: userId },
       },
     });
 
