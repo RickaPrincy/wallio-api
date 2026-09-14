@@ -31,4 +31,11 @@ export class TransactionService {
       return await manager.save(Transaction, transactions);
     });
   }
+
+  async count(criteria?: Criteria<Transaction>): Promise<number> {
+    return await this.repository.count({
+      where: criteria as any,
+      withDeleted: true,
+    });
+  }
 }
