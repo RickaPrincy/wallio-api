@@ -4,3 +4,6 @@ export * from "./firebase.module";
 export * from "./transaction.module";
 export * from "./init-info.module";
 export * from "./wallet.module";
+export * from "./project.module";
+export * from "./project-item.module";
+export * from "./label.module";

@@ -1,51 +1,54 @@
 import { ApiProperty } from "@nestjs/swagger";
 import {
   IsDateString,
-  IsEnum,
   IsNumberString,
   IsOptional,
   IsString,
   IsUUID,
   IsNotEmpty,
 } from "class-validator";
-import { TransactionType } from "@wallio/entities";
 
-export class Transaction {
+export class ProjectItem {
   @IsUUID()
   @ApiProperty({ format: "uuid" })
   id: string;
-
-  @IsNumberString()
-  @ApiProperty({ example: "150.50" })
-  amount: string;
 
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
   description: string;
 
+  @IsNumberString()
+  @ApiProperty({ example: "150.50" })
+  amount: string;
+
   @IsOptional()
-  @IsEnum(TransactionType)
-  @ApiProperty({ enum: TransactionType, required: false })
-  type?: TransactionType;
+  @IsNumberString()
+  @ApiProperty({ example: "150.50", required: false })
+  actualAmount?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ required: false })
+  icon?: string;
+
+  @IsUUID()
+  @ApiProperty({ format: "uuid" })
+  projectId: string;
 
   @IsOptional()
   @IsUUID()
   @ApiProperty({ format: "uuid", required: false })
-  labelId?: string;
+  transactionId?: string;
 
   @IsOptional()
-  @IsUUID()
-  @ApiProperty({ format: "uuid", required: false })
-  transferId?: string;
+  @IsDateString()
+  @ApiProperty({ format: "date-time", required: false })
+  executedAt?: string;
 
   @IsDateString()
   @ApiProperty({ format: "date-time" })
   createdAt: string;
-
-  @IsUUID()
-  @ApiProperty({ format: "uuid" })
-  walletId: string;
 
   @IsDateString()
   @ApiProperty({ format: "date-time" })

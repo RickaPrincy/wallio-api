@@ -10,6 +10,9 @@ import {
   TransactionModule,
   WalletModule,
   UserModule,
+  ProjectModule,
+  ProjectItemModule,
+  LabelModule,
 } from "./modules";
 import {
   BearerTokenSetterMiddleware,
@@ -30,6 +33,9 @@ import {
     AuthModule,
     TransactionModule,
     InitInfoModule,
+    ProjectModule,
+    ProjectItemModule,
+    LabelModule,
   ],
 })
 export class AppModule {

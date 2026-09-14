@@ -1,7 +1,11 @@
 import { Body, Controller, Get, Param, Put } from "@nestjs/common";
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { ApiPagination, ApiRequiredSpec } from "@wallio/rest/swagger/decorator";
-import { TransactionService, WalletService } from "@wallio/services";
+import {
+  TransactionService,
+  WalletService,
+  LabelService,
+} from "@wallio/services";
 import { Transaction as RestTransaction } from "@wallio/rest/model";
 import { TransactionMapper } from "@wallio/rest/mapper";
 import { Authenticated } from "@wallio/auth/decorator";
@@ -14,6 +18,7 @@ import { Pagination, PaginationParams } from "../decorator";
 export class TransactionController {
   constructor(
     private readonly walletService: WalletService,
+    private readonly labelService: LabelService,
     private readonly transactionService: TransactionService,
     private readonly transactionMapper: TransactionMapper
   ) {}
@@ -33,9 +38,15 @@ export class TransactionController {
     const walletIds = transactions.map((transaction) => transaction.walletId);
     const wallets = await this.walletService.findByIds(user.id, walletIds);
 
+    const labelIds = transactions
+      .map((transaction) => transaction.labelId)
+      .filter((labelId): labelId is string => !!labelId);
+    const labels = await this.labelService.findByIds(user.id, labelIds);
+
     const domainTransactions = await this.transactionMapper.toDomainList(
       transactions,
-      wallets
+      wallets,
+      labels
     );
     const createdTransactions =
       await this.transactionService.saveAll(domainTransactions);

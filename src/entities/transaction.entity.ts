@@ -9,7 +9,14 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 import { Wallet } from "./wallet.entity";
+import { Label } from "./label.entity";
 import { BigNumber } from "bignumber.js";
+
+export enum TransactionType {
+  EXPENSE = "EXPENSE",
+  INCOME = "INCOME",
+  TRANSFER = "TRANSFER",
+}
 
 @Entity({ name: "transaction" })
 export class Transaction {
@@ -25,6 +32,19 @@ export class Transaction {
 
   @Column({ nullable: false })
   description: string;
+
+  @Column({ type: "enum", enum: TransactionType, nullable: true })
+  type?: TransactionType;
+
+  @ManyToOne(() => Label, {
+    eager: true,
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  label?: Label;
+
+  @Column({ name: "transfer_id", nullable: true })
+  transferId?: string;
 
   @Index()
   @ManyToOne(() => Wallet, {
