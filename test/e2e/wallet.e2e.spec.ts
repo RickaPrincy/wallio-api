@@ -9,9 +9,9 @@ describe("WalletController (e2e)", () => {
     testApp = await createTestApp();
   });
 
-  it("should throw forbidden when access others wallet", async () => {
+  it("should throw forbidden when access others wallets", async () => {
     const res = await request(testApp.app.getHttpServer())
-      .get(`/users/${JANE.id}/wallets/dummy-wallet-id`)
+      .get(`/users/${JANE.id}/wallets`)
       .set("Authorization", "Bearer " + JOHN.firebaseId);
 
     expect(res.status).toBe(403);
