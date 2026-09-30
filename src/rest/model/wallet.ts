@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
 } from "class-validator";
 
 export enum WalletType {
@@ -30,6 +31,15 @@ export class Wallet {
   @IsString()
   @ApiProperty({ required: false })
   description?: string;
+
+  @IsOptional()
+  @Matches(/^[A-Z]{3}$/)
+  @ApiProperty({
+    required: false,
+    description: "ISO 4217 code, MGA when missing",
+    example: "MGA",
+  })
+  currency?: string;
 
   @IsEnum(WalletType)
   @ApiProperty({ enum: WalletType, enumName: "WalletType" })

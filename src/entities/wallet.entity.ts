@@ -41,6 +41,10 @@ export class Wallet {
   })
   type: WalletType;
 
+  // ISO 4217 code. Balances and transaction amounts are in this currency.
+  @Column({ length: 3, default: "MGA" })
+  currency: string;
+
   @ManyToOne(() => User, (user) => user.wallets, {
     eager: true,
     nullable: false,

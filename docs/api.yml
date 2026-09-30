@@ -1012,6 +1012,10 @@ components:
           type: string
         description:
           type: string
+        currency:
+          type: string
+          description: ISO 4217 code, MGA when missing
+          example: MGA
         type:
           allOf:
             - $ref: '#/components/schemas/WalletType'
