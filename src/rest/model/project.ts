@@ -23,6 +23,11 @@ export class Project {
   @ApiProperty({ example: "1500.00", required: false })
   plannedAmount?: string;
 
+  @IsOptional()
+  @IsDateString()
+  @ApiProperty({ format: "date-time", required: false })
+  finishedAt?: string;
+
   @IsDateString()
   @ApiProperty({ format: "date-time" })
   createdAt: string;

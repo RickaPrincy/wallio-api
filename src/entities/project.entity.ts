@@ -28,6 +28,9 @@ export class Project {
   })
   plannedAmount?: string;
 
+  @Column({ name: "finished_at", type: "timestamptz", nullable: true })
+  finishedAt?: string;
+
   @ManyToOne(() => User, {
     eager: true,
     nullable: false,
