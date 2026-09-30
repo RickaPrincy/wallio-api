@@ -2,7 +2,7 @@ import { Repository } from "typeorm";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
-import { Wallet as DomainWallet, User } from "@wallio/entities";
+import { Wallet as DomainWallet, User, WalletType } from "@wallio/entities";
 import { Wallet as RestWallet } from "@wallio/rest/model/wallet";
 
 @Injectable()
@@ -36,6 +36,14 @@ export class WalletMapper {
         `Invalid currency "${restWallet.currency}", expected an ISO 4217 code`
       );
     }
+    // A debt or a receivable is an amount owed: it cannot be negative.
+    const owed = [WalletType.RECEIVABLE, WalletType.DEBT] as string[];
+    if (owed.includes(restWallet.type) && Number(restWallet.balance) < 0) {
+      throw new BadRequestException(
+        `The balance of a ${restWallet.type.toLowerCase()} account cannot be negative`
+      );
+    }
+
     return this.walletRepository.create({ ...restWallet, user });
   }
 }

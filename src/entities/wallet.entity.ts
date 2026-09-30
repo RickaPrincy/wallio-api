@@ -14,6 +14,10 @@ export enum WalletType {
   CASH = "CASH",
   BANK = "BANK",
   MOBILE_MONEY = "MOBILE_MONEY",
+  // Money others owe you. Its balance never goes below 0.
+  RECEIVABLE = "RECEIVABLE",
+  // Money you owe. Its balance is what is left to pay, never below 0.
+  DEBT = "DEBT",
 }
 
 @Entity({ name: "wallets" })

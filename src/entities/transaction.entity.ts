@@ -33,6 +33,10 @@ export class Transaction {
   @Column({ nullable: false })
   description: string;
 
+  // Who the money is owed to or by, on debt and receivable accounts.
+  @Column({ nullable: true, length: 80 })
+  counterparty?: string;
+
   @Column({ type: "enum", enum: TransactionType, nullable: true })
   type?: TransactionType;
 

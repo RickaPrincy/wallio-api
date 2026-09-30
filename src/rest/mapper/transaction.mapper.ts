@@ -1,5 +1,5 @@
 import { Repository } from "typeorm";
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import {
@@ -39,6 +39,11 @@ export class TransactionMapper {
         const wallet = wallets.find(
           (wallet) => wallet.id === restTransaction.walletId
         )!;
+        if ((restTransaction.counterparty?.length ?? 0) > 80) {
+          throw new BadRequestException(
+            "A person name has at most 80 characters"
+          );
+        }
         const label = restTransaction.labelId
           ? labels.find((label) => label.id === restTransaction.labelId)
           : undefined;

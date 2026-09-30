@@ -1000,6 +1000,8 @@ components:
         - CASH
         - BANK
         - MOBILE_MONEY
+        - RECEIVABLE
+        - DEBT
     Wallet:
       type: object
       properties:
@@ -1069,6 +1071,9 @@ components:
         labelId:
           type: string
           format: uuid
+        counterparty:
+          type: string
+          description: Person, on debt and receivable accounts
         transferId:
           type: string
           format: uuid

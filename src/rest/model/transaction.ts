@@ -35,6 +35,14 @@ export class Transaction {
   labelId?: string;
 
   @IsOptional()
+  @IsString()
+  @ApiProperty({
+    required: false,
+    description: "Person, on debt and receivable accounts",
+  })
+  counterparty?: string;
+
+  @IsOptional()
   @IsUUID()
   @ApiProperty({ format: "uuid", required: false })
   transferId?: string;
