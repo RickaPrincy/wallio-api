@@ -23,6 +23,8 @@ export class ProjectItemService {
       pagination,
       order: UPDATED_AT_CREATED_AT_ORDER_BY,
       withDeleted: true,
+      // project is not eager, but the mapper needs it for projectId.
+      relations: { project: true },
     });
   }
 
