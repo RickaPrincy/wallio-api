@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -10,10 +11,14 @@ import { ApiTags } from "@nestjs/swagger";
 import { ApiRequiredSpec } from "@wallio/rest/swagger/decorator";
 import { UserService } from "@wallio/services";
 import { User as RestUser, CreateUser } from "@wallio/rest/model/user";
-import { AuthenticatedFirebaseUser } from "@wallio/auth/decorator/retriever";
+import {
+  AuthenticatedFirebaseUser,
+  AuthenticatedUser,
+} from "@wallio/auth/decorator/retriever";
 import { UserMapper } from "@wallio/rest/mapper";
 import { FirebaseUser } from "@wallio/services/firebase";
 import { Authenticated } from "@wallio/auth/decorator";
+import { User } from "@wallio/entities";
 
 @Controller()
 @ApiTags("Users")
@@ -48,5 +53,16 @@ export class UserController {
     const createdUser = await this.userService.createUser(domainUser);
 
     return this.userMapper.toRest(createdUser);
+  }
+
+  @Delete("/users/:id")
+  @Authenticated({ selfMatcher: "id" })
+  @ApiRequiredSpec({ operationId: "deleteUserById", type: RestUser })
+  async deleteUserById(
+    @Param("id") _userId: string,
+    @AuthenticatedUser() user: User
+  ): Promise<RestUser> {
+    await this.userService.deleteUser(user);
+    return this.userMapper.toRest(user);
   }
 }

@@ -12,6 +12,7 @@ export const createFirebaseMock = (users: FirebaseUser[]) => {
 
       return Promise.resolve({ email: user.email });
     },
+    deleteUser: async (_uid: string) => Promise.resolve(),
     findUserByEmail: async (email: string) => {
       const user = users.find((user) => user.email === email);
 

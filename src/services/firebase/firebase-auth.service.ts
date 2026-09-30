@@ -18,6 +18,17 @@ export class FirebaseAuthService {
     return this.firebaseAuth.verifyIdToken(tokenId);
   }
 
+  async deleteUser(uid: string) {
+    try {
+      await this.firebaseAuth.deleteUser(uid);
+    } catch (error) {
+      // Already gone: a previous deletion reached Firebase, nothing left to do.
+      if (error?.code !== "auth/user-not-found") {
+        throw error;
+      }
+    }
+  }
+
   async findUserByEmail(providedEmail: string): Promise<FirebaseUser> {
     const retrieveUser = await this.firebaseAuth.getUserByEmail(providedEmail);
     return {
