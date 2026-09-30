@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   NotFoundException,
   Param,
@@ -46,6 +47,12 @@ export class UserController {
     @AuthenticatedFirebaseUser() firebaseUser: FirebaseUser,
     @Body() createUser: CreateUser
   ): Promise<RestUser> {
+    // Checked against Firebase itself (the middleware reads the user record),
+    // so it holds right after the link is clicked, without a new token.
+    if (!firebaseUser.emailVerified) {
+      throw new ForbiddenException("Verify your email address first");
+    }
+
     const domainUser = await this.userMapper.createToDomain(
       createUser,
       firebaseUser

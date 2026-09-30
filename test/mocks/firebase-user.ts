@@ -15,3 +15,21 @@ export const JANE_FIREBASE_USER: FirebaseUser = {
   email: "janedane@gmail.com",
   photoURL: "https://dummy.com",
 };
+
+// Not seeded: can create a Wallio account.
+export const CAROL_FIREBASE_USER: FirebaseUser = {
+  emailVerified: true,
+  uid: "carol_uid",
+  displayName: "Carol",
+  email: "carol@gmail.com",
+  photoURL: "https://dummy.com",
+};
+
+// Not seeded, email not verified yet.
+export const BOB_FIREBASE_USER: FirebaseUser = {
+  emailVerified: false,
+  uid: "bob_uid",
+  displayName: "Bob",
+  email: "bob@gmail.com",
+  photoURL: "https://dummy.com",
+};

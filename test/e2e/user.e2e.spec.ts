@@ -4,7 +4,7 @@ import { DataSource } from "typeorm";
 import { createTestApp, TestApp } from "./utils/application";
 import { FirebaseAuthService } from "@wallio/services/firebase";
 import { Project, ProjectItem, Transaction, Wallet } from "@wallio/entities";
-import { JOHN, JANE } from "../mocks";
+import { JOHN, JANE, BOB_FIREBASE_USER, CAROL_FIREBASE_USER } from "../mocks";
 
 const NOW = new Date().toISOString();
 
@@ -24,6 +24,32 @@ describe("UserController (e2e)", () => {
 
   beforeAll(async () => {
     testApp = await createTestApp();
+  });
+
+  const createUser = (firebaseUid: string) =>
+    request(testApp.app.getHttpServer())
+      .post("/users")
+      .set("Authorization", "Bearer " + firebaseUid)
+      .send({
+        id: randomUUID(),
+        firstName: "New",
+        lastName: "User",
+        email: "ignored@example.com",
+        createdAt: NOW,
+        updatedAt: NOW,
+      });
+
+  it("should refuse to create a user whose email is not verified", async () => {
+    const res = await createUser(BOB_FIREBASE_USER.uid);
+
+    expect(res.status).toBe(403);
+  });
+
+  it("should create a user whose email is verified", async () => {
+    const res = await createUser(CAROL_FIREBASE_USER.uid);
+
+    expect(res.status).toBe(201);
+    expect(res.body.email).toBe(CAROL_FIREBASE_USER.email);
   });
 
   it("should throw forbidden when deleting someone else", async () => {

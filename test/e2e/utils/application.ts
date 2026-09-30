@@ -12,7 +12,12 @@ import { AppModule } from "../../../src/app.module";
 import { createPostgresContainer } from "./testcontainer";
 import { SEEDER_NAME, SeederModule, SeederRunnable } from "../seeders";
 import { createFirebaseMock } from "../../mocks/services";
-import { JANE_FIREBASE_USER, JOHN_FIREBASE_USER } from "../../mocks";
+import {
+  BOB_FIREBASE_USER,
+  CAROL_FIREBASE_USER,
+  JANE_FIREBASE_USER,
+  JOHN_FIREBASE_USER,
+} from "../../mocks";
 
 export type TestApp = {
   app: INestApplication;
@@ -40,7 +45,14 @@ export const createTestApp = async (): Promise<TestApp> => {
     .overrideProvider(FirebaseAppService)
     .useValue(null)
     .overrideProvider(FirebaseAuthService)
-    .useValue(createFirebaseMock([JOHN_FIREBASE_USER, JANE_FIREBASE_USER]))
+    .useValue(
+      createFirebaseMock([
+        JOHN_FIREBASE_USER,
+        JANE_FIREBASE_USER,
+        CAROL_FIREBASE_USER,
+        BOB_FIREBASE_USER,
+      ])
+    )
     .compile();
 
   const app = moduleFixture.createNestApplication();
