@@ -32,9 +32,14 @@ jobs:
         run: npm run build
   test-cov:
     runs-on: ubuntu-latest
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # Sonar needs the full history to attribute new code and blame.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -48,6 +53,8 @@ jobs:
         run: npm run test:cov
       
       - name: SonarQube Scan
+        # Secrets are not available on PRs from forks, nor before SONAR_TOKEN is set.
+        if: ${{ env.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarqube-scan-action@v6
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} 
