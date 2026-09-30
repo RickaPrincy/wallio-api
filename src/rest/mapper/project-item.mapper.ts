@@ -42,7 +42,9 @@ export class ProjectItemMapper {
     restItem: RestProjectItem,
     projects: Project[]
   ): Promise<DomainProjectItem> {
-    const project = projects.find((project) => project.id === restItem.projectId)!;
+    const project = projects.find(
+      (project) => project.id === restItem.projectId
+    )!;
     const transaction = restItem.transactionId
       ? ({ id: restItem.transactionId } as Transaction)
       : undefined;

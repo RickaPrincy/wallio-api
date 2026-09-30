@@ -48,11 +48,21 @@ async function drainAll(service: InitInfoService, pageSize: number) {
 }
 
 function buildService(counts: [number, number, number, number, number]) {
-  const wallets = Array.from({ length: counts[0] }, (_, i) => ({ id: `wallet-${i}` }));
-  const transactions = Array.from({ length: counts[1] }, (_, i) => ({ id: `tx-${i}` }));
-  const projects = Array.from({ length: counts[2] }, (_, i) => ({ id: `project-${i}` }));
-  const projectItems = Array.from({ length: counts[3] }, (_, i) => ({ id: `item-${i}` }));
-  const labels = Array.from({ length: counts[4] }, (_, i) => ({ id: `label-${i}` }));
+  const wallets = Array.from({ length: counts[0] }, (_, i) => ({
+    id: `wallet-${i}`,
+  }));
+  const transactions = Array.from({ length: counts[1] }, (_, i) => ({
+    id: `tx-${i}`,
+  }));
+  const projects = Array.from({ length: counts[2] }, (_, i) => ({
+    id: `project-${i}`,
+  }));
+  const projectItems = Array.from({ length: counts[3] }, (_, i) => ({
+    id: `item-${i}`,
+  }));
+  const labels = Array.from({ length: counts[4] }, (_, i) => ({
+    id: `label-${i}`,
+  }));
 
   const service = new InitInfoService(
     fakeService(wallets) as any,
@@ -83,8 +93,14 @@ describe("InitInfoService.getByUserId (full drain)", () => {
   for (const counts of scenarios) {
     for (const pageSize of pageSizes) {
       it(`drains every item exactly once for counts=${JSON.stringify(counts)} pageSize=${pageSize}`, async () => {
-        const { service, wallets, transactions, projects, projectItems, labels } =
-          buildService(counts);
+        const {
+          service,
+          wallets,
+          transactions,
+          projects,
+          projectItems,
+          labels,
+        } = buildService(counts);
 
         const collected = await drainAll(service, pageSize);
 

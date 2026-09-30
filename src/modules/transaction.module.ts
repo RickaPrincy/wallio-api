@@ -8,11 +8,7 @@ import { TransactionController } from "@wallio/rest/controller";
 import { TransactionMapper } from "@wallio/rest/mapper";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Transaction]),
-    WalletModule,
-    LabelModule,
-  ],
+  imports: [TypeOrmModule.forFeature([Transaction]), WalletModule, LabelModule],
   controllers: [TransactionController],
   providers: [TransactionService, TransactionMapper],
   exports: [TransactionService, TransactionMapper],
