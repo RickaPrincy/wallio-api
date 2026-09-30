@@ -1,4 +1,4 @@
-import { DataSource, In, Repository } from "typeorm";
+import { DataSource, In, Not, Repository } from "typeorm";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -7,6 +7,7 @@ import { Criteria } from "@wallio/services/common/criteria";
 import { PaginationParams } from "@wallio/rest/decorator";
 import { UPDATED_AT_CREATED_AT_ORDER_BY } from "@wallio/services/common/default-order-by";
 import { findByCriteria } from "@wallio/services/common/find-by-criteria";
+import { assertNotOwnedByOthers } from "@wallio/services/common/assert-not-owned-by-others";
 
 const MAX_WALLETS = 100;
 @Injectable()
@@ -14,7 +15,7 @@ export class WalletService {
   constructor(
     @InjectRepository(Wallet) private readonly repository: Repository<Wallet>,
     private readonly dataSource: DataSource
-  ) { }
+  ) {}
 
   async findAll(pagination: PaginationParams, criteria: Criteria<Wallet>) {
     return await findByCriteria<Wallet>({
@@ -26,8 +27,16 @@ export class WalletService {
     });
   }
 
-  async saveAll(wallets: Wallet[]): Promise<Wallet[]> {
+  async saveAll(userId: string, wallets: Wallet[]): Promise<Wallet[]> {
     return await this.dataSource.transaction(async (manager) => {
+      await assertNotOwnedByOthers({
+        manager,
+        entity: Wallet,
+        ids: wallets.map((wallet) => wallet.id),
+        ownedByOthers: { user: { id: Not(userId) } },
+        name: "wallets",
+      });
+
       return await manager.save(Wallet, wallets);
     });
   }
@@ -57,7 +66,7 @@ export class WalletService {
 
     return wallets;
   }
-  
+
   async count(criteria?: Criteria<Wallet>): Promise<number> {
     return await this.repository.count({
       where: criteria as any,

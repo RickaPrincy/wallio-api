@@ -1,4 +1,4 @@
-import { DataSource, In, Repository } from "typeorm";
+import { DataSource, In, Not, Repository } from "typeorm";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -7,6 +7,7 @@ import { Criteria } from "@wallio/services/common/criteria";
 import { PaginationParams } from "@wallio/rest/decorator";
 import { UPDATED_AT_CREATED_AT_ORDER_BY } from "@wallio/services/common/default-order-by";
 import { findByCriteria } from "@wallio/services/common/find-by-criteria";
+import { assertNotOwnedByOthers } from "@wallio/services/common/assert-not-owned-by-others";
 
 const MAX_LABELS = 100;
 
@@ -28,8 +29,16 @@ export class LabelService {
     });
   }
 
-  async saveAll(labels: Label[]): Promise<Label[]> {
+  async saveAll(userId: string, labels: Label[]): Promise<Label[]> {
     return await this.dataSource.transaction(async (manager) => {
+      await assertNotOwnedByOthers({
+        manager,
+        entity: Label,
+        ids: labels.map((label) => label.id),
+        ownedByOthers: { user: { id: Not(userId) } },
+        name: "labels",
+      });
+
       return await manager.save(Label, labels);
     });
   }

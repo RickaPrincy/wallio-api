@@ -28,7 +28,10 @@ export class LabelController {
   ): Promise<RestLabel[]> {
     const domainLabels = await this.labelMapper.toDomainList(labels, user);
 
-    const createdLabels = await this.labelService.saveAll(domainLabels);
+    const createdLabels = await this.labelService.saveAll(
+      user.id,
+      domainLabels
+    );
 
     return this.labelMapper.toRestList(createdLabels);
   }

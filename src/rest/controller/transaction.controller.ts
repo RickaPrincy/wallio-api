@@ -48,8 +48,10 @@ export class TransactionController {
       wallets,
       labels
     );
-    const createdTransactions =
-      await this.transactionService.saveAll(domainTransactions);
+    const createdTransactions = await this.transactionService.saveAll(
+      user.id,
+      domainTransactions
+    );
 
     return this.transactionMapper.toRestList(createdTransactions);
   }

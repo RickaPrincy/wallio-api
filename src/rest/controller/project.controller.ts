@@ -26,9 +26,15 @@ export class ProjectController {
     @AuthenticatedUser() user: User,
     @Body() projects: RestProject[]
   ): Promise<RestProject[]> {
-    const domainProjects = await this.projectMapper.toDomainList(projects, user);
+    const domainProjects = await this.projectMapper.toDomainList(
+      projects,
+      user
+    );
 
-    const createdProjects = await this.projectService.saveAll(domainProjects);
+    const createdProjects = await this.projectService.saveAll(
+      user.id,
+      domainProjects
+    );
 
     return this.projectMapper.toRestList(createdProjects);
   }

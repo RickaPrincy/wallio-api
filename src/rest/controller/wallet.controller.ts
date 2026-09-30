@@ -28,7 +28,10 @@ export class WalletController {
   ): Promise<RestWallet[]> {
     const domainWallets = await this.walletMapper.toDomainList(wallets, user);
 
-    const createdWallets = await this.walletService.saveAll(domainWallets);
+    const createdWallets = await this.walletService.saveAll(
+      user.id,
+      domainWallets
+    );
 
     return this.walletMapper.toRestList(createdWallets);
   }

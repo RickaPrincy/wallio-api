@@ -37,7 +37,10 @@ export class ProjectItemController {
       items,
       projects
     );
-    const createdItems = await this.projectItemService.saveAll(domainItems);
+    const createdItems = await this.projectItemService.saveAll(
+      user.id,
+      domainItems
+    );
 
     return this.projectItemMapper.toRestList(createdItems);
   }

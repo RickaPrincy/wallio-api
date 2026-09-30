@@ -1,11 +1,12 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, Not, Repository } from "typeorm";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
 import { PaginationParams } from "@wallio/rest/decorator";
 import { Criteria } from "@wallio/services/common/criteria";
-import { ProjectItem } from "@wallio/entities";
+import { ProjectItem, Transaction } from "@wallio/entities";
 import { findByCriteria } from "@wallio/services/common/find-by-criteria";
+import { assertNotOwnedByOthers } from "@wallio/services/common/assert-not-owned-by-others";
 import { UPDATED_AT_CREATED_AT_ORDER_BY } from "./common/default-order-by";
 
 @Injectable()
@@ -28,8 +29,24 @@ export class ProjectItemService {
     });
   }
 
-  async saveAll(items: ProjectItem[]): Promise<ProjectItem[]> {
+  async saveAll(userId: string, items: ProjectItem[]): Promise<ProjectItem[]> {
     return await this.dataSource.transaction(async (manager) => {
+      await assertNotOwnedByOthers({
+        manager,
+        entity: ProjectItem,
+        ids: items.map((item) => item.id),
+        ownedByOthers: { project: { user: { id: Not(userId) } } },
+        name: "project items",
+      });
+
+      await assertNotOwnedByOthers({
+        manager,
+        entity: Transaction,
+        ids: items.map((item) => item.transaction?.id),
+        ownedByOthers: { wallet: { user: { id: Not(userId) } } },
+        name: "transactions",
+      });
+
       return await manager.save(ProjectItem, items);
     });
   }

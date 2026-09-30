@@ -1,4 +1,4 @@
-import { DataSource, In, Repository } from "typeorm";
+import { DataSource, In, Not, Repository } from "typeorm";
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 
@@ -7,6 +7,7 @@ import { Criteria } from "@wallio/services/common/criteria";
 import { PaginationParams } from "@wallio/rest/decorator";
 import { UPDATED_AT_CREATED_AT_ORDER_BY } from "@wallio/services/common/default-order-by";
 import { findByCriteria } from "@wallio/services/common/find-by-criteria";
+import { assertNotOwnedByOthers } from "@wallio/services/common/assert-not-owned-by-others";
 
 const MAX_PROJECTS = 100;
 
@@ -28,8 +29,16 @@ export class ProjectService {
     });
   }
 
-  async saveAll(projects: Project[]): Promise<Project[]> {
+  async saveAll(userId: string, projects: Project[]): Promise<Project[]> {
     return await this.dataSource.transaction(async (manager) => {
+      await assertNotOwnedByOthers({
+        manager,
+        entity: Project,
+        ids: projects.map((project) => project.id),
+        ownedByOthers: { user: { id: Not(userId) } },
+        name: "projects",
+      });
+
       return await manager.save(Project, projects);
     });
   }
