@@ -83,11 +83,12 @@ describe("RecurringTransactionController (e2e)", () => {
     expect(res.status).toBe(400);
   });
 
-  it("should reject a MONTHLY recurrence without a dayOfMonth", async () => {
+  it("should accept a MONTHLY recurrence without a dayOfMonth (every day of the matching month)", async () => {
     const res = await put(JANE, [
       base(randomUUID(), { frequency: "MONTHLY", dayOfMonth: undefined }),
     ]);
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(200);
+    expect(res.body[0].dayOfMonth).toBeFalsy();
   });
 
   it("should reject a dayOfMonth when the frequency is not MONTHLY", async () => {
@@ -128,6 +129,70 @@ describe("RecurringTransactionController (e2e)", () => {
         frequency: "WEEKLY",
         dayOfMonth: undefined,
         weekDays: ["FUNDAY"],
+      }),
+    ]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should accept a DAILY recurrence with an optional weekDays filter", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "DAILY",
+        dayOfMonth: undefined,
+        weekDays: ["TUESDAY", "FRIDAY"],
+      }),
+    ]);
+    expect(res.status).toBe(200);
+    expect(res.body[0].weekDays).toEqual(["TUESDAY", "FRIDAY"]);
+  });
+
+  it("should accept a DAILY recurrence with no weekDays filter (every day)", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), { frequency: "DAILY", dayOfMonth: undefined }),
+    ]);
+    expect(res.status).toBe(200);
+  });
+
+  it("should reject an invalid weekday on a DAILY recurrence", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "DAILY",
+        dayOfMonth: undefined,
+        weekDays: ["FUNDAY"],
+      }),
+    ]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should accept a MONTHLY recurrence with a months filter (e.g. quarterly)", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), { months: [1, 4, 7, 10] }),
+    ]);
+    expect(res.status).toBe(200);
+    expect(res.body[0].months).toEqual([1, 4, 7, 10]);
+  });
+
+  it("should accept a MONTHLY recurrence with no months filter (every month)", async () => {
+    const res = await put(JANE, [base(randomUUID())]);
+    expect(res.status).toBe(200);
+    expect(res.body[0].months).toEqual([]);
+  });
+
+  it("should reject an out-of-range month in a MONTHLY recurrence's months filter", async () => {
+    expect(
+      (await put(JANE, [base(randomUUID(), { months: [0] })])).status
+    ).toBe(400);
+    expect(
+      (await put(JANE, [base(randomUUID(), { months: [13] })])).status
+    ).toBe(400);
+  });
+
+  it("should reject months when the frequency is not MONTHLY", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "DAILY",
+        dayOfMonth: undefined,
+        months: [2],
       }),
     ]);
     expect(res.status).toBe(400);

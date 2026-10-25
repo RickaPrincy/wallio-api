@@ -63,8 +63,8 @@ export class RecurringTransaction {
   @ApiProperty({ enum: RecurrenceFrequency, enumName: "RecurrenceFrequency" })
   frequency: RecurrenceFrequency;
 
-  // Required iff frequency is MONTHLY, optional iff YEARLY (a YEARLY rule
-  // can be left vague - "sometime in February" - and defaults to day 1),
+  // Optional for MONTHLY and the legacy YEARLY alike (a rule can be left
+  // vague - "sometime in February", or "every month" with no fixed day),
   // absent otherwise. 1-31, clamped client-side to the last day of
   // shorter/non-leap months.
   @IsOptional()
@@ -74,7 +74,9 @@ export class RecurringTransaction {
   @ApiProperty({ required: false, minimum: 1, maximum: 31 })
   dayOfMonth?: number;
 
-  // Required iff frequency is YEARLY (1-12); must be absent otherwise.
+  // Legacy singular month, required iff frequency is the now-unused YEARLY
+  // (kept only for backward compatibility); must be absent otherwise. New
+  // rules use `months` instead.
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -82,8 +84,26 @@ export class RecurringTransaction {
   @ApiProperty({ required: false, minimum: 1, maximum: 12 })
   month?: number;
 
-  // Required iff frequency is WEEKLY (at least one day); must be empty
-  // otherwise. Purely a client-side computation input, same as dayOfMonth.
+  // Optional filter for MONTHLY: which month(s) of the year it applies to
+  // (e.g. [2] = every year in February, [1,4,7,10] = quarterly, empty/unset
+  // = every month). Must be absent for anything but MONTHLY.
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(12)
+  @IsInt({ each: true })
+  @Min(1, { each: true })
+  @Max(12, { each: true })
+  @ApiProperty({
+    type: Number,
+    isArray: true,
+    required: false,
+    description:
+      "1-12, which month(s) a MONTHLY rule applies to; empty/absent = every month",
+  })
+  months?: number[];
+
+  // Optional filter for DAILY (empty/absent = every day); required (at
+  // least one) for the legacy WEEKLY; must be absent otherwise.
   @IsOptional()
   @IsArray()
   @ArrayMaxSize(7)

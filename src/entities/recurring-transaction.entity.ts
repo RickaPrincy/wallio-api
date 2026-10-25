@@ -73,22 +73,36 @@ export class RecurringTransaction {
   @Column({ type: "enum", enum: RecurrenceFrequency, nullable: false })
   frequency: RecurrenceFrequency;
 
-  // Required iff frequency is MONTHLY, optional iff YEARLY (a YEARLY rule
-  // can be vague - "sometime in February" - and default to day 1), absent
-  // otherwise: the day of the month to run on, clamped to the last day of
-  // shorter/non-leap months. Purely a client-side computation input, never
-  // validated against a calendar here.
+  // Optional for MONTHLY (unset means "every day of the matching month(s)",
+  // or defaults to day 1 depending on how the client chooses to interpret a
+  // day-less rule), absent for everything else (including YEARLY, kept below
+  // for backward compatibility only - new rules don't use it): the day of
+  // the month to run on, clamped to the last day of shorter/non-leap months.
+  // Purely a client-side computation input, never validated against a
+  // calendar here.
   @Column({ name: "day_of_month", type: "smallint", nullable: true })
   dayOfMonth?: number;
 
-  // Required iff frequency is YEARLY: the month (1-12) to run in. Must be
-  // absent otherwise. Purely a client-side computation input.
+  // Legacy singular month, used only by the now-unused YEARLY frequency.
+  // Kept for backward compatibility - new rules use `months` instead.
+  // Must be absent for anything but YEARLY.
   @Column({ name: "month", type: "smallint", nullable: true })
   month?: number;
 
-  // Required iff frequency is WEEKLY: which day(s) of the week to run on
-  // (e.g. [MONDAY, THURSDAY]). Must be empty/absent otherwise. Purely a
-  // client-side computation input, same as dayOfMonth.
+  // Optional filter for MONTHLY: which month(s) of the year it applies to
+  // (e.g. [2] = "every year in February", [1,4,7,10] = quarterly, empty/unset
+  // = every month). This is what replaces the old single-month YEARLY
+  // frequency going forward - YEARLY itself is kept in the enum only for
+  // backward compatibility, new rules should use MONTHLY + months instead.
+  // Purely a client-side computation input.
+  @Column({ name: "months", type: "simple-array", default: "" })
+  months: number[];
+
+  // Optional filter for DAILY: which day(s) of the week it applies to (e.g.
+  // [MONDAY, THURSDAY], empty/unset = every day). This is what replaces the
+  // old standalone WEEKLY frequency going forward - WEEKLY itself is kept in
+  // the enum only for backward compatibility, new rules should use DAILY +
+  // weekDays instead. Purely a client-side computation input.
   @Column({ name: "week_days", type: "simple-array", default: "" })
   weekDays: Weekday[];
 

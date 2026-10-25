@@ -35,7 +35,16 @@ export class RecurringTransactionMapper {
     recurringTransaction: DomainRecurringTransaction
   ): Promise<RestRecurringTransaction> {
     const { wallet, label, ...rest } = recurringTransaction;
-    return { ...rest, walletId: wallet.id, labelId: label?.id };
+    return {
+      ...rest,
+      // TypeORM's "simple-array" column type always round-trips as
+      // string[] under the hood regardless of the declared TS type -
+      // coerce back to real numbers so the REST contract is genuinely
+      // numeric, not just numeric-looking strings.
+      months: (rest.months ?? []).map((m) => Number(m)),
+      walletId: wallet.id,
+      labelId: label?.id,
+    };
   }
 
   async toDomainList(
@@ -75,31 +84,27 @@ export class RecurringTransactionMapper {
       );
     }
 
+    // WEEKLY and YEARLY are kept in the enum/columns only for backward
+    // compatibility with any row that already used them - new rules express
+    // the same ideas via DAILY+weekDays and MONTHLY+months instead (see the
+    // entity's doc comments), since nothing on the live DB should ever have
+    // a column dropped or an enum value removed out from under it.
     const isMonthly = restItem.frequency === RecurrenceFrequency.MONTHLY;
     const isYearly = restItem.frequency === RecurrenceFrequency.YEARLY;
+    const isDaily = restItem.frequency === RecurrenceFrequency.DAILY;
+    const isWeekly = restItem.frequency === RecurrenceFrequency.WEEKLY;
+
+    // Optional for MONTHLY and YEARLY alike (a rule can be as vague as
+    // "sometime in February", or "every month" with no fixed day); absent
+    // for everything else.
     const hasDayOfMonth =
       restItem.dayOfMonth !== undefined && restItem.dayOfMonth !== null;
-
-    if (isMonthly) {
-      if (
-        !hasDayOfMonth ||
-        restItem.dayOfMonth! < 1 ||
-        restItem.dayOfMonth! > 31
-      ) {
-        throw new BadRequestException(
-          "dayOfMonth is required and must be between 1 and 31 for a MONTHLY recurrence"
-        );
-      }
-    } else if (isYearly) {
-      // Optional for YEARLY - a rule can be as vague as "sometime in
-      // February"; when present it must still be a real day number.
+    if (isMonthly || isYearly) {
       if (
         hasDayOfMonth &&
         (restItem.dayOfMonth! < 1 || restItem.dayOfMonth! > 31)
       ) {
-        throw new BadRequestException(
-          "dayOfMonth must be between 1 and 31 for a YEARLY recurrence"
-        );
+        throw new BadRequestException("dayOfMonth must be between 1 and 31");
       }
     } else if (hasDayOfMonth) {
       throw new BadRequestException(
@@ -107,6 +112,8 @@ export class RecurringTransactionMapper {
       );
     }
 
+    // Legacy, YEARLY-only, required there (unchanged) - new rules use
+    // `months` below instead.
     const hasMonth = restItem.month !== undefined && restItem.month !== null;
     if (isYearly) {
       if (!hasMonth || restItem.month! < 1 || restItem.month! > 12) {
@@ -120,7 +127,23 @@ export class RecurringTransactionMapper {
       );
     }
 
-    const isWeekly = restItem.frequency === RecurrenceFrequency.WEEKLY;
+    // Optional filter for MONTHLY (empty/absent = every month); must be
+    // absent otherwise.
+    const months = restItem.months ?? [];
+    if (isMonthly) {
+      if (months.some((m) => !Number.isInteger(m) || m < 1 || m > 12)) {
+        throw new BadRequestException(
+          "Every month must be an integer between 1 and 12"
+        );
+      }
+    } else if (months.length > 0) {
+      throw new BadRequestException(
+        "months can only be set for a MONTHLY recurrence"
+      );
+    }
+
+    // Optional filter for DAILY (empty/absent = every day); required (at
+    // least one) for the legacy WEEKLY; absent for everything else.
     const weekDays = restItem.weekDays ?? [];
     if (isWeekly) {
       if (
@@ -131,9 +154,13 @@ export class RecurringTransactionMapper {
           "weekDays must contain at least one valid day for a WEEKLY recurrence"
         );
       }
+    } else if (isDaily) {
+      if (weekDays.some((day) => !Object.values(Weekday).includes(day))) {
+        throw new BadRequestException(`Invalid day of the week`);
+      }
     } else if (weekDays.length > 0) {
       throw new BadRequestException(
-        "weekDays can only be set for a WEEKLY recurrence"
+        "weekDays can only be set for a DAILY or WEEKLY recurrence"
       );
     }
 
@@ -153,6 +180,7 @@ export class RecurringTransactionMapper {
       ...restItem,
       notificationTimes,
       weekDays,
+      months,
       wallet,
       label,
     });
