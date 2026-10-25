@@ -77,7 +77,9 @@ describe("RecurringTransactionController (e2e)", () => {
   });
 
   it("should reject an invalid frequency", async () => {
-    const res = await put(JANE, [base(randomUUID(), { frequency: "YEARLY" })]);
+    const res = await put(JANE, [
+      base(randomUUID(), { frequency: "FORTNIGHTLY" }),
+    ]);
     expect(res.status).toBe(400);
   });
 
@@ -141,6 +143,65 @@ describe("RecurringTransactionController (e2e)", () => {
     ]);
     expect(res.status).toBe(200);
     expect(res.body[0].weekDays).toEqual(["MONDAY", "THURSDAY"]);
+  });
+
+  it("should reject a YEARLY recurrence without a month", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "YEARLY",
+        dayOfMonth: 20,
+        month: undefined,
+      }),
+    ]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should reject a month when the frequency is not YEARLY", async () => {
+    const res = await put(JANE, [base(randomUUID(), { month: 2 })]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should reject an out-of-range month", async () => {
+    expect(
+      (
+        await put(JANE, [
+          base(randomUUID(), { frequency: "YEARLY", dayOfMonth: 1, month: 0 }),
+        ])
+      ).status
+    ).toBe(400);
+    expect(
+      (
+        await put(JANE, [
+          base(randomUUID(), {
+            frequency: "YEARLY",
+            dayOfMonth: 1,
+            month: 13,
+          }),
+        ])
+      ).status
+    ).toBe(400);
+  });
+
+  it("should accept a YEARLY recurrence with a precise day", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), { frequency: "YEARLY", dayOfMonth: 20, month: 2 }),
+    ]);
+    expect(res.status).toBe(200);
+    expect(res.body[0].month).toBe(2);
+    expect(res.body[0].dayOfMonth).toBe(20);
+  });
+
+  it("should accept a YEARLY recurrence without a precise day ('just February')", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "YEARLY",
+        dayOfMonth: undefined,
+        month: 2,
+      }),
+    ]);
+    expect(res.status).toBe(200);
+    expect(res.body[0].month).toBe(2);
+    expect(res.body[0].dayOfMonth).toBeFalsy();
   });
 
   it("should reject a malformed notification time", async () => {

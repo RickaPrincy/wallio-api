@@ -63,14 +63,24 @@ export class RecurringTransaction {
   @ApiProperty({ enum: RecurrenceFrequency, enumName: "RecurrenceFrequency" })
   frequency: RecurrenceFrequency;
 
-  // Required iff frequency is MONTHLY (1-31, clamped client-side to the last
-  // day of shorter months); must be absent otherwise.
+  // Required iff frequency is MONTHLY, optional iff YEARLY (a YEARLY rule
+  // can be left vague - "sometime in February" - and defaults to day 1),
+  // absent otherwise. 1-31, clamped client-side to the last day of
+  // shorter/non-leap months.
   @IsOptional()
   @IsInt()
   @Min(1)
   @Max(31)
   @ApiProperty({ required: false, minimum: 1, maximum: 31 })
   dayOfMonth?: number;
+
+  // Required iff frequency is YEARLY (1-12); must be absent otherwise.
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(12)
+  @ApiProperty({ required: false, minimum: 1, maximum: 12 })
+  month?: number;
 
   // Required iff frequency is WEEKLY (at least one day); must be empty
   // otherwise. Purely a client-side computation input, same as dayOfMonth.

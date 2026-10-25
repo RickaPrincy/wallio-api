@@ -76,23 +76,47 @@ export class RecurringTransactionMapper {
     }
 
     const isMonthly = restItem.frequency === RecurrenceFrequency.MONTHLY;
+    const isYearly = restItem.frequency === RecurrenceFrequency.YEARLY;
+    const hasDayOfMonth =
+      restItem.dayOfMonth !== undefined && restItem.dayOfMonth !== null;
+
     if (isMonthly) {
       if (
-        restItem.dayOfMonth === undefined ||
-        restItem.dayOfMonth === null ||
-        restItem.dayOfMonth < 1 ||
-        restItem.dayOfMonth > 31
+        !hasDayOfMonth ||
+        restItem.dayOfMonth! < 1 ||
+        restItem.dayOfMonth! > 31
       ) {
         throw new BadRequestException(
           "dayOfMonth is required and must be between 1 and 31 for a MONTHLY recurrence"
         );
       }
-    } else if (
-      restItem.dayOfMonth !== undefined &&
-      restItem.dayOfMonth !== null
-    ) {
+    } else if (isYearly) {
+      // Optional for YEARLY - a rule can be as vague as "sometime in
+      // February"; when present it must still be a real day number.
+      if (
+        hasDayOfMonth &&
+        (restItem.dayOfMonth! < 1 || restItem.dayOfMonth! > 31)
+      ) {
+        throw new BadRequestException(
+          "dayOfMonth must be between 1 and 31 for a YEARLY recurrence"
+        );
+      }
+    } else if (hasDayOfMonth) {
       throw new BadRequestException(
-        "dayOfMonth can only be set for a MONTHLY recurrence"
+        "dayOfMonth can only be set for a MONTHLY or YEARLY recurrence"
+      );
+    }
+
+    const hasMonth = restItem.month !== undefined && restItem.month !== null;
+    if (isYearly) {
+      if (!hasMonth || restItem.month! < 1 || restItem.month! > 12) {
+        throw new BadRequestException(
+          "month is required and must be between 1 and 12 for a YEARLY recurrence"
+        );
+      }
+    } else if (hasMonth) {
+      throw new BadRequestException(
+        "month can only be set for a YEARLY recurrence"
       );
     }
 

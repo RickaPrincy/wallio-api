@@ -18,6 +18,7 @@ export enum RecurrenceFrequency {
   DAILY = "DAILY",
   WEEKLY = "WEEKLY",
   MONTHLY = "MONTHLY",
+  YEARLY = "YEARLY",
 }
 
 export enum Weekday {
@@ -72,11 +73,18 @@ export class RecurringTransaction {
   @Column({ type: "enum", enum: RecurrenceFrequency, nullable: false })
   frequency: RecurrenceFrequency;
 
-  // Required iff frequency is MONTHLY: the day of the month to run on,
-  // clamped to the last day of shorter months. Purely a client-side
-  // computation input, never validated against a calendar here.
+  // Required iff frequency is MONTHLY, optional iff YEARLY (a YEARLY rule
+  // can be vague - "sometime in February" - and default to day 1), absent
+  // otherwise: the day of the month to run on, clamped to the last day of
+  // shorter/non-leap months. Purely a client-side computation input, never
+  // validated against a calendar here.
   @Column({ name: "day_of_month", type: "smallint", nullable: true })
   dayOfMonth?: number;
+
+  // Required iff frequency is YEARLY: the month (1-12) to run in. Must be
+  // absent otherwise. Purely a client-side computation input.
+  @Column({ name: "month", type: "smallint", nullable: true })
+  month?: number;
 
   // Required iff frequency is WEEKLY: which day(s) of the week to run on
   // (e.g. [MONDAY, THURSDAY]). Must be empty/absent otherwise. Purely a
