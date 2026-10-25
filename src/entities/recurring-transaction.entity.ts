@@ -20,6 +20,16 @@ export enum RecurrenceFrequency {
   MONTHLY = "MONTHLY",
 }
 
+export enum Weekday {
+  MONDAY = "MONDAY",
+  TUESDAY = "TUESDAY",
+  WEDNESDAY = "WEDNESDAY",
+  THURSDAY = "THURSDAY",
+  FRIDAY = "FRIDAY",
+  SATURDAY = "SATURDAY",
+  SUNDAY = "SUNDAY",
+}
+
 @Entity({ name: "recurring_transactions" })
 export class RecurringTransaction {
   @PrimaryGeneratedColumn("uuid")
@@ -67,6 +77,12 @@ export class RecurringTransaction {
   // computation input, never validated against a calendar here.
   @Column({ name: "day_of_month", type: "smallint", nullable: true })
   dayOfMonth?: number;
+
+  // Required iff frequency is WEEKLY: which day(s) of the week to run on
+  // (e.g. [MONDAY, THURSDAY]). Must be empty/absent otherwise. Purely a
+  // client-side computation input, same as dayOfMonth.
+  @Column({ name: "week_days", type: "simple-array", default: "" })
+  weekDays: Weekday[];
 
   // "HH:mm" strings, stored as-is. Resolution/scheduling is entirely client-side.
   @Column({

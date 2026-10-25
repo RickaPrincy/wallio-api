@@ -14,7 +14,11 @@ import {
   Max,
   Min,
 } from "class-validator";
-import { TransactionType, RecurrenceFrequency } from "@wallio/entities";
+import {
+  TransactionType,
+  RecurrenceFrequency,
+  Weekday,
+} from "@wallio/entities";
 
 export class RecurringTransaction {
   @IsUUID()
@@ -67,6 +71,20 @@ export class RecurringTransaction {
   @Max(31)
   @ApiProperty({ required: false, minimum: 1, maximum: 31 })
   dayOfMonth?: number;
+
+  // Required iff frequency is WEEKLY (at least one day); must be empty
+  // otherwise. Purely a client-side computation input, same as dayOfMonth.
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(7)
+  @IsEnum(Weekday, { each: true })
+  @ApiProperty({
+    enum: Weekday,
+    enumName: "Weekday",
+    isArray: true,
+    required: false,
+  })
+  weekDays?: Weekday[];
 
   @IsArray()
   @ArrayMaxSize(20)

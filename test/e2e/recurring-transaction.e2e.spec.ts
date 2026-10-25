@@ -104,6 +104,45 @@ describe("RecurringTransactionController (e2e)", () => {
     ).toBe(400);
   });
 
+  it("should reject a WEEKLY recurrence without weekDays", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "WEEKLY",
+        dayOfMonth: undefined,
+        weekDays: [],
+      }),
+    ]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should reject weekDays when the frequency is not WEEKLY", async () => {
+    const res = await put(JANE, [base(randomUUID(), { weekDays: ["MONDAY"] })]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should reject an invalid weekday", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "WEEKLY",
+        dayOfMonth: undefined,
+        weekDays: ["FUNDAY"],
+      }),
+    ]);
+    expect(res.status).toBe(400);
+  });
+
+  it("should accept a WEEKLY recurrence with multiple weekDays", async () => {
+    const res = await put(JANE, [
+      base(randomUUID(), {
+        frequency: "WEEKLY",
+        dayOfMonth: undefined,
+        weekDays: ["MONDAY", "THURSDAY"],
+      }),
+    ]);
+    expect(res.status).toBe(200);
+    expect(res.body[0].weekDays).toEqual(["MONDAY", "THURSDAY"]);
+  });
+
   it("should reject a malformed notification time", async () => {
     const res = await put(JANE, [
       base(randomUUID(), { notificationTimes: ["8:00"] }),

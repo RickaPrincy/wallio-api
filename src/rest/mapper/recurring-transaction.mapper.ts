@@ -6,6 +6,7 @@ import {
   RecurringTransaction as DomainRecurringTransaction,
   RecurrenceFrequency,
   TransactionType,
+  Weekday,
   Wallet,
   Label,
 } from "@wallio/entities";
@@ -95,6 +96,23 @@ export class RecurringTransactionMapper {
       );
     }
 
+    const isWeekly = restItem.frequency === RecurrenceFrequency.WEEKLY;
+    const weekDays = restItem.weekDays ?? [];
+    if (isWeekly) {
+      if (
+        weekDays.length === 0 ||
+        weekDays.some((day) => !Object.values(Weekday).includes(day))
+      ) {
+        throw new BadRequestException(
+          "weekDays must contain at least one valid day for a WEEKLY recurrence"
+        );
+      }
+    } else if (weekDays.length > 0) {
+      throw new BadRequestException(
+        "weekDays can only be set for a WEEKLY recurrence"
+      );
+    }
+
     const notificationTimes = restItem.notificationTimes ?? [];
     if (notificationTimes.some((time) => !NOTIFICATION_TIME_REGEX.test(time))) {
       throw new BadRequestException(
@@ -110,6 +128,7 @@ export class RecurringTransactionMapper {
     return this.recurringTransactionRepository.create({
       ...restItem,
       notificationTimes,
+      weekDays,
       wallet,
       label,
     });
