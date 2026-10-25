@@ -76,6 +76,12 @@ export class RecurringTransaction {
   })
   notificationTimes: string[];
 
+  // When the rule is allowed to start producing occurrences - may be in the
+  // future (a rule doesn't fire the moment it's created unless startAt is
+  // now/past). Purely a synced value, no server-side date logic on it.
+  @Column({ name: "start_at", type: "timestamptz", nullable: false })
+  startAt: string;
+
   // Purely a synced display value: whatever the client last computed and
   // pushed. Never recomputed or validated server-side beyond being a date.
   @Column({ name: "next_occurrence_at", type: "timestamptz", nullable: false })

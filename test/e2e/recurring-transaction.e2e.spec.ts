@@ -53,6 +53,7 @@ describe("RecurringTransactionController (e2e)", () => {
       frequency: "MONTHLY",
       dayOfMonth: 5,
       notificationTimes: ["08:00", "20:30"],
+      startAt: now,
       nextOccurrenceAt: now,
       createdAt: now,
       updatedAt: now,
@@ -156,6 +157,7 @@ describe("RecurringTransactionController (e2e)", () => {
     expect(created.frequency).toBe("MONTHLY");
     expect(created.dayOfMonth).toBe(28);
     expect(created.notificationTimes).toEqual(["09:15", "18:45"]);
+    expect(new Date(created.startAt).toISOString()).toBe(now);
     expect(new Date(created.nextOccurrenceAt).toISOString()).toBe(now);
     expect(new Date(created.lastExecutedAt).toISOString()).toBe(now);
     expect(new Date(created.endAt).toISOString()).toBe(endAt);

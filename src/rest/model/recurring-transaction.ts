@@ -79,6 +79,12 @@ export class RecurringTransaction {
   })
   notificationTimes: string[];
 
+  // When the rule is allowed to start producing occurrences; may be in the
+  // future. Purely stored/synced, no server-side date logic beyond format.
+  @IsDateString()
+  @ApiProperty({ format: "date-time" })
+  startAt: string;
+
   // Purely a synced display value: whatever the client last computed and
   // pushed. The server never computes or validates it beyond ISO date format.
   @IsDateString()

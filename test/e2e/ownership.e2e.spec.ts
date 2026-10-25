@@ -56,6 +56,7 @@ const recurringTransaction = (id: string, walletId: string) => ({
   frequency: "MONTHLY",
   dayOfMonth: 1,
   notificationTimes: [],
+  startAt: NOW,
   nextOccurrenceAt: NOW,
   createdAt: NOW,
   updatedAt: NOW,
