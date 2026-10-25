@@ -6,12 +6,14 @@ import { TransactionService } from "./transaction.service";
 import { ProjectService } from "./project.service";
 import { ProjectItemService } from "./project-item.service";
 import { LabelService } from "./label.service";
+import { RecurringTransactionService } from "./recurring-transaction.service";
 import {
   Transaction,
   Wallet,
   Project,
   ProjectItem,
   Label,
+  RecurringTransaction,
 } from "@wallio/entities";
 
 @Injectable()
@@ -21,7 +23,8 @@ export class InitInfoService {
     private readonly transactionService: TransactionService,
     private readonly projectService: ProjectService,
     private readonly projectItemService: ProjectItemService,
-    private readonly labelService: LabelService
+    private readonly labelService: LabelService,
+    private readonly recurringTransactionService: RecurringTransactionService
   ) {}
 
   // Fetches exactly `take` items starting at offset `skip` within a single
@@ -40,14 +43,19 @@ export class InitInfoService {
   }
 
   // Walks the virtual concatenation wallets++transactions++projects++
-  // projectItems++labels and returns exactly one "page" worth of items
-  // (pagination.pageSize), which may span more than one entity type when a
-  // page boundary falls between two of them. This is required for
-  // correctness: the client always advances `page` by exactly 1 regardless
-  // of how many items a given page actually contained, so any response that
-  // returns fewer than pageSize items *without it being the true end* would
-  // cause the next page's offset to skip over un-synced data. Returning all
-  // five arrays empty is the client's sole "sync complete" signal.
+  // projectItems++labels++recurringTransactions and returns exactly one
+  // "page" worth of items (pagination.pageSize), which may span more than
+  // one entity type when a page boundary falls between two of them. This is
+  // required for correctness: the client always advances `page` by exactly 1
+  // regardless of how many items a given page actually contained, so any
+  // response that returns fewer than pageSize items *without it being the
+  // true end* would cause the next page's offset to skip over un-synced
+  // data. Returning all six arrays empty is the client's sole "sync
+  // complete" signal. recurringTransactions was appended last, after an
+  // already-shipped labels stage, specifically so every offset computation
+  // for the first five stages stays byte-for-byte unchanged: a client mid-
+  // sync when this landed is unaffected, only one that reaches "all empty"
+  // ever sees the 6th array.
   async getByUserId(
     userId: string,
     pagination: PaginationParams
@@ -60,12 +68,14 @@ export class InitInfoService {
     const projectCriteria = { user: { id: userId } };
     const projectItemCriteria = { project: { user: { id: userId } } };
     const labelCriteria = { user: { id: userId } };
+    const recurringTransactionCriteria = { wallet: { user: { id: userId } } };
 
     let wallets: Wallet[] = [];
     let transactions: Transaction[] = [];
     let projects: Project[] = [];
     let projectItems: ProjectItem[] = [];
     let labels: Label[] = [];
+    let recurringTransactions: RecurringTransaction[] = [];
 
     if (remaining > 0) {
       const total = await this.walletService.count(walletCriteria);
@@ -129,9 +139,30 @@ export class InitInfoService {
 
     if (remaining > 0) {
       const total = await this.labelService.count(labelCriteria);
-      if (cursor < total) {
+      if (cursor >= total) {
+        cursor -= total;
+      } else {
         labels = await this.fetchOffset(
           (p) => this.labelService.findAll(p, labelCriteria),
+          cursor,
+          remaining
+        );
+        remaining -= labels.length;
+        cursor = 0;
+      }
+    }
+
+    if (remaining > 0) {
+      const total = await this.recurringTransactionService.count(
+        recurringTransactionCriteria
+      );
+      if (cursor < total) {
+        recurringTransactions = await this.fetchOffset(
+          (p) =>
+            this.recurringTransactionService.findAll(
+              p,
+              recurringTransactionCriteria
+            ),
           cursor,
           remaining
         );
@@ -144,6 +175,7 @@ export class InitInfoService {
       projects,
       projectItems,
       labels,
+      recurringTransactions,
     });
   }
 
@@ -153,6 +185,7 @@ export class InitInfoService {
     projects?: Project[];
     projectItems?: ProjectItem[];
     labels?: Label[];
+    recurringTransactions?: RecurringTransaction[];
   }): InitInfo {
     const result = new InitInfo();
     result.wallets = partial.wallets ?? [];
@@ -160,6 +193,7 @@ export class InitInfoService {
     result.projects = partial.projects ?? [];
     result.projectItems = partial.projectItems ?? [];
     result.labels = partial.labels ?? [];
+    result.recurringTransactions = partial.recurringTransactions ?? [];
     return result;
   }
 }

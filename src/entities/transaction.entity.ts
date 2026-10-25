@@ -10,6 +10,12 @@ import {
 } from "typeorm";
 import { Wallet } from "./wallet.entity";
 import { Label } from "./label.entity";
+// Type-only: RecurringTransaction's own file imports TransactionType from this
+// one, so a normal (value) import here would create a runtime require cycle.
+// The relation below references it by name instead, which TypeORM resolves
+// against the class name at entity-metadata build time (see EntityMetadata's
+// targetName), so this import never needs to exist at runtime.
+import type { RecurringTransaction } from "./recurring-transaction.entity";
 import { BigNumber } from "bignumber.js";
 
 export enum TransactionType {
@@ -49,6 +55,16 @@ export class Transaction {
 
   @Column({ name: "transfer_id", nullable: true })
   transferId?: string;
+
+  // The recurring rule this transaction was generated from, if any. The FK
+  // lives here (the "many" side): one rule produces many transactions over
+  // time, so RecurringTransaction itself never points back at any of them.
+  @ManyToOne("RecurringTransaction", {
+    eager: false,
+    nullable: true,
+    onDelete: "SET NULL",
+  })
+  recurringTransaction?: RecurringTransaction;
 
   @Index()
   @ManyToOne(() => Wallet, {

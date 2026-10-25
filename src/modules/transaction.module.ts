@@ -3,12 +3,18 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { WalletModule } from "./wallet.module";
 import { LabelModule } from "./label.module";
+import { RecurringTransactionModule } from "./recurring-transaction.module";
 import { TransactionService } from "@wallio/services";
 import { TransactionController } from "@wallio/rest/controller";
 import { TransactionMapper } from "@wallio/rest/mapper";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Transaction]), WalletModule, LabelModule],
+  imports: [
+    TypeOrmModule.forFeature([Transaction]),
+    WalletModule,
+    LabelModule,
+    RecurringTransactionModule,
+  ],
   controllers: [TransactionController],
   providers: [TransactionService, TransactionMapper],
   exports: [TransactionService, TransactionMapper],

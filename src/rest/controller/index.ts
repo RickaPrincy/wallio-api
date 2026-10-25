@@ -6,3 +6,4 @@ export * from "./init-info.controller";
 export * from "./project.controller";
 export * from "./project-item.controller";
 export * from "./label.controller";
+export * from "./recurring-transaction.controller";

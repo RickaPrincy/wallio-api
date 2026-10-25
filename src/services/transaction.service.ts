@@ -4,7 +4,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { PaginationParams } from "@wallio/rest/decorator";
 import { Criteria } from "@wallio/services/common/criteria";
-import { Transaction } from "@wallio/entities";
+import { Transaction, RecurringTransaction } from "@wallio/entities";
 import { findByCriteria } from "@wallio/services/common/find-by-criteria";
 import { assertNotOwnedByOthers } from "@wallio/services/common/assert-not-owned-by-others";
 import { UPDATED_AT_CREATED_AT_ORDER_BY } from "./common/default-order-by";
@@ -24,6 +24,9 @@ export class TransactionService {
       pagination,
       order: UPDATED_AT_CREATED_AT_ORDER_BY,
       withDeleted: true,
+      // recurringTransaction is not eager, but the mapper needs it for
+      // recurringTransactionId.
+      relations: { recurringTransaction: true },
     });
   }
 
@@ -38,6 +41,16 @@ export class TransactionService {
         ids: transactions.map((transaction) => transaction.id),
         ownedByOthers: { wallet: { user: { id: Not(userId) } } },
         name: "transactions",
+      });
+
+      await assertNotOwnedByOthers({
+        manager,
+        entity: RecurringTransaction,
+        ids: transactions.map(
+          (transaction) => transaction.recurringTransaction?.id
+        ),
+        ownedByOthers: { wallet: { user: { id: Not(userId) } } },
+        name: "recurring transactions",
       });
 
       return await manager.save(Transaction, transactions);

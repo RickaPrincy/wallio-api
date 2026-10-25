@@ -47,6 +47,11 @@ export class Transaction {
   @ApiProperty({ format: "uuid", required: false })
   transferId?: string;
 
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({ format: "uuid", required: false })
+  recurringTransactionId?: string;
+
   @IsDateString()
   @ApiProperty({ format: "date-time" })
   createdAt: string;

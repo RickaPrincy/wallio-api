@@ -5,3 +5,4 @@ export * from "./transaction.entity";
 export * from "./project.entity";
 export * from "./project-item.entity";
 export * from "./label.entity";
+export * from "./recurring-transaction.entity";

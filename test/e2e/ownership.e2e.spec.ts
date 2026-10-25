@@ -48,6 +48,18 @@ const projectItem = (
   createdAt: NOW,
   updatedAt: NOW,
 });
+const recurringTransaction = (id: string, walletId: string) => ({
+  id,
+  walletId,
+  amount: "10.00",
+  description: "Rent",
+  frequency: "MONTHLY",
+  dayOfMonth: 1,
+  notificationTimes: [],
+  nextOccurrenceAt: NOW,
+  createdAt: NOW,
+  updatedAt: NOW,
+});
 
 describe("Ownership on PUT routes (e2e)", () => {
   let testApp: TestApp;
@@ -57,6 +69,7 @@ describe("Ownership on PUT routes (e2e)", () => {
   const janeProjectId = randomUUID();
   const janeTransactionId = randomUUID();
   const janeProjectItemId = randomUUID();
+  const janeRecurringTransactionId = randomUUID();
   const johnWalletId = randomUUID();
   const johnProjectId = randomUUID();
 
@@ -92,6 +105,13 @@ describe("Ownership on PUT routes (e2e)", () => {
       (
         await put(JANE, "project-items", [
           projectItem(janeProjectItemId, janeProjectId),
+        ])
+      ).status
+    ).toBe(200);
+    expect(
+      (
+        await put(JANE, "recurring-transactions", [
+          recurringTransaction(janeRecurringTransactionId, janeWalletId),
         ])
       ).status
     ).toBe(200);
@@ -160,6 +180,27 @@ describe("Ownership on PUT routes (e2e)", () => {
   it("refuses to link a project item to a transaction of someone else", async () => {
     const res = await put(JOHN, "project-items", [
       projectItem(randomUUID(), johnProjectId, janeTransactionId),
+    ]);
+    expect(res.status).toBe(400);
+  });
+
+  it("refuses to move a recurring transaction of someone else into its own wallet", async () => {
+    const res = await put(JOHN, "recurring-transactions", [
+      recurringTransaction(janeRecurringTransactionId, johnWalletId),
+    ]);
+    expect(res.status).toBe(400);
+
+    const janeRecurringTransactions = await get(JANE, "recurring-transactions");
+    expect(janeRecurringTransactions.body).toHaveLength(1);
+    expect(janeRecurringTransactions.body[0].walletId).toBe(janeWalletId);
+  });
+
+  it("refuses to link a transaction to a recurring transaction of someone else", async () => {
+    const res = await put(JOHN, "transactions", [
+      {
+        ...transaction(randomUUID(), johnWalletId),
+        recurringTransactionId: janeRecurringTransactionId,
+      },
     ]);
     expect(res.status).toBe(400);
   });

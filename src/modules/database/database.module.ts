@@ -10,6 +10,7 @@ import {
   Project,
   ProjectItem,
   Label,
+  RecurringTransaction,
 } from "@wallio/entities";
 
 export const ENTITIES = [
@@ -20,6 +21,7 @@ export const ENTITIES = [
   Project,
   ProjectItem,
   Label,
+  RecurringTransaction,
 ];
 
 @Module({

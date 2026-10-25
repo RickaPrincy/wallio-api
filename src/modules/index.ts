@@ -7,3 +7,4 @@ export * from "./wallet.module";
 export * from "./project.module";
 export * from "./project-item.module";
 export * from "./label.module";
+export * from "./recurring-transaction.module";

@@ -5,6 +5,7 @@ import { TransactionModule } from "./transaction.module";
 import { ProjectModule } from "./project.module";
 import { ProjectItemModule } from "./project-item.module";
 import { LabelModule } from "./label.module";
+import { RecurringTransactionModule } from "./recurring-transaction.module";
 import { InitInfosController } from "@wallio/rest/controller";
 import { InitInfoMapper } from "@wallio/rest/mapper";
 
@@ -15,6 +16,7 @@ import { InitInfoMapper } from "@wallio/rest/mapper";
     ProjectModule,
     ProjectItemModule,
     LabelModule,
+    RecurringTransactionModule,
   ],
   controllers: [InitInfosController],
   providers: [InitInfoService, InitInfoMapper],

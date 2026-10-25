@@ -4,3 +4,4 @@ export * from "./init-info";
 export * from "./project";
 export * from "./project-item";
 export * from "./label";
+export * from "./recurring-transaction";

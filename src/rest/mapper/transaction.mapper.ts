@@ -6,6 +6,7 @@ import {
   Transaction as DomainTransaction,
   Wallet,
   Label,
+  RecurringTransaction,
 } from "@wallio/entities";
 import { Transaction as RestTransaction } from "@wallio/rest/model";
 
@@ -25,8 +26,14 @@ export class TransactionMapper {
   }
 
   async toRest(transaction: DomainTransaction): Promise<RestTransaction> {
-    const { wallet, label, ...restTransaction } = transaction;
-    return { ...restTransaction, walletId: wallet.id, labelId: label?.id };
+    const { wallet, label, recurringTransaction, ...restTransaction } =
+      transaction;
+    return {
+      ...restTransaction,
+      walletId: wallet.id,
+      labelId: label?.id,
+      recurringTransactionId: recurringTransaction?.id,
+    };
   }
 
   async toDomainList(
@@ -47,10 +54,16 @@ export class TransactionMapper {
         const label = restTransaction.labelId
           ? labels.find((label) => label.id === restTransaction.labelId)
           : undefined;
+        const recurringTransaction = restTransaction.recurringTransactionId
+          ? ({
+              id: restTransaction.recurringTransactionId,
+            } as RecurringTransaction)
+          : undefined;
         return this.transactionRepository.create({
           ...restTransaction,
           wallet,
           label,
+          recurringTransaction,
         });
       })
     );

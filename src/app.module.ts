@@ -13,6 +13,7 @@ import {
   ProjectModule,
   ProjectItemModule,
   LabelModule,
+  RecurringTransactionModule,
 } from "./modules";
 import {
   BearerTokenSetterMiddleware,
@@ -36,6 +37,7 @@ import {
     ProjectModule,
     ProjectItemModule,
     LabelModule,
+    RecurringTransactionModule,
   ],
 })
 export class AppModule {

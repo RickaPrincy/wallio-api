@@ -4,6 +4,7 @@ import { TransactionMapper } from "./transaction.mapper";
 import { ProjectMapper } from "./project.mapper";
 import { ProjectItemMapper } from "./project-item.mapper";
 import { LabelMapper } from "./label.mapper";
+import { RecurringTransactionMapper } from "./recurring-transaction.mapper";
 import { InitInfo as RestInitInfo } from "../model";
 import { InitInfo } from "@wallio/services/model";
 
@@ -14,7 +15,8 @@ export class InitInfoMapper {
     private readonly transactionMapper: TransactionMapper,
     private readonly projectMapper: ProjectMapper,
     private readonly projectItemMapper: ProjectItemMapper,
-    private readonly labelMapper: LabelMapper
+    private readonly labelMapper: LabelMapper,
+    private readonly recurringTransactionMapper: RecurringTransactionMapper
   ) {}
 
   async toRest(initInfo: InitInfo): Promise<RestInitInfo> {
@@ -35,6 +37,18 @@ export class InitInfoMapper {
     const labels = await Promise.all(
       initInfo.labels.map((label) => this.labelMapper.toRest(label))
     );
-    return { wallets, transactions, projects, projectItems, labels };
+    const recurringTransactions = await Promise.all(
+      initInfo.recurringTransactions.map((recurringTransaction) =>
+        this.recurringTransactionMapper.toRest(recurringTransaction)
+      )
+    );
+    return {
+      wallets,
+      transactions,
+      projects,
+      projectItems,
+      labels,
+      recurringTransactions,
+    };
   }
 }
