@@ -6,3 +6,4 @@ export * from "./project.mapper";
 export * from "./project-item.mapper";
 export * from "./label.mapper";
 export * from "./recurring-transaction.mapper";
+export * from "./recurring-transaction-occurrence.mapper";

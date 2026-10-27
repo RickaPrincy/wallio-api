@@ -5,6 +5,7 @@ import { Project } from "./project";
 import { ProjectItem } from "./project-item";
 import { Label } from "./label";
 import { RecurringTransaction } from "./recurring-transaction";
+import { RecurringTransactionOccurrence } from "./recurring-transaction-occurrence";
 
 export class InitInfo {
   @ApiProperty({ type: Wallet, isArray: true })
@@ -26,4 +27,8 @@ export class InitInfo {
   // every existing offset computation for the first five stages is unchanged.
   @ApiProperty({ type: RecurringTransaction, isArray: true })
   recurringTransactions: RecurringTransaction[];
+
+  // Seventh stage, appended after recurringTransactions the same way.
+  @ApiProperty({ type: RecurringTransactionOccurrence, isArray: true })
+  recurringTransactionOccurrences: RecurringTransactionOccurrence[];
 }

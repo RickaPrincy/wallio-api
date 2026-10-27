@@ -5,3 +5,4 @@ export * from "./project";
 export * from "./project-item";
 export * from "./label";
 export * from "./recurring-transaction";
+export * from "./recurring-transaction-occurrence";

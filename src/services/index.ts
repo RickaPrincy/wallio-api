@@ -7,3 +7,4 @@ export * from "./project.service";
 export * from "./project-item.service";
 export * from "./label.service";
 export * from "./recurring-transaction.service";
+export * from "./recurring-transaction-occurrence.service";

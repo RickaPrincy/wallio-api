@@ -5,6 +5,7 @@ import { ProjectMapper } from "./project.mapper";
 import { ProjectItemMapper } from "./project-item.mapper";
 import { LabelMapper } from "./label.mapper";
 import { RecurringTransactionMapper } from "./recurring-transaction.mapper";
+import { RecurringTransactionOccurrenceMapper } from "./recurring-transaction-occurrence.mapper";
 import { InitInfo as RestInitInfo } from "../model";
 import { InitInfo } from "@wallio/services/model";
 
@@ -16,7 +17,8 @@ export class InitInfoMapper {
     private readonly projectMapper: ProjectMapper,
     private readonly projectItemMapper: ProjectItemMapper,
     private readonly labelMapper: LabelMapper,
-    private readonly recurringTransactionMapper: RecurringTransactionMapper
+    private readonly recurringTransactionMapper: RecurringTransactionMapper,
+    private readonly occurrenceMapper: RecurringTransactionOccurrenceMapper
   ) {}
 
   async toRest(initInfo: InitInfo): Promise<RestInitInfo> {
@@ -49,6 +51,9 @@ export class InitInfoMapper {
       projectItems,
       labels,
       recurringTransactions,
+      recurringTransactionOccurrences: this.occurrenceMapper.toRestList(
+        initInfo.recurringTransactionOccurrences
+      ),
     };
   }
 }

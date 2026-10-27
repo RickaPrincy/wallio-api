@@ -7,6 +7,7 @@ import { ProjectService } from "./project.service";
 import { ProjectItemService } from "./project-item.service";
 import { LabelService } from "./label.service";
 import { RecurringTransactionService } from "./recurring-transaction.service";
+import { RecurringTransactionOccurrenceService } from "./recurring-transaction-occurrence.service";
 import {
   Transaction,
   Wallet,
@@ -14,6 +15,7 @@ import {
   ProjectItem,
   Label,
   RecurringTransaction,
+  RecurringTransactionOccurrence,
 } from "@wallio/entities";
 
 @Injectable()
@@ -24,7 +26,8 @@ export class InitInfoService {
     private readonly projectService: ProjectService,
     private readonly projectItemService: ProjectItemService,
     private readonly labelService: LabelService,
-    private readonly recurringTransactionService: RecurringTransactionService
+    private readonly recurringTransactionService: RecurringTransactionService,
+    private readonly occurrenceService: RecurringTransactionOccurrenceService
   ) {}
 
   // Fetches exactly `take` items starting at offset `skip` within a single
@@ -55,7 +58,8 @@ export class InitInfoService {
   // already-shipped labels stage, specifically so every offset computation
   // for the first five stages stays byte-for-byte unchanged: a client mid-
   // sync when this landed is unaffected, only one that reaches "all empty"
-  // ever sees the 6th array.
+  // ever sees the 6th array. recurringTransactionOccurrences is the 7th,
+  // appended the same way.
   async getByUserId(
     userId: string,
     pagination: PaginationParams
@@ -69,6 +73,9 @@ export class InitInfoService {
     const projectItemCriteria = { project: { user: { id: userId } } };
     const labelCriteria = { user: { id: userId } };
     const recurringTransactionCriteria = { wallet: { user: { id: userId } } };
+    const occurrenceCriteria = {
+      recurringTransaction: { wallet: { user: { id: userId } } },
+    };
 
     let wallets: Wallet[] = [];
     let transactions: Transaction[] = [];
@@ -76,6 +83,7 @@ export class InitInfoService {
     let projectItems: ProjectItem[] = [];
     let labels: Label[] = [];
     let recurringTransactions: RecurringTransaction[] = [];
+    let recurringTransactionOccurrences: RecurringTransactionOccurrence[] = [];
 
     if (remaining > 0) {
       const total = await this.walletService.count(walletCriteria);
@@ -156,13 +164,28 @@ export class InitInfoService {
       const total = await this.recurringTransactionService.count(
         recurringTransactionCriteria
       );
-      if (cursor < total) {
+      if (cursor >= total) {
+        cursor -= total;
+      } else {
         recurringTransactions = await this.fetchOffset(
           (p) =>
             this.recurringTransactionService.findAll(
               p,
               recurringTransactionCriteria
             ),
+          cursor,
+          remaining
+        );
+        remaining -= recurringTransactions.length;
+        cursor = 0;
+      }
+    }
+
+    if (remaining > 0) {
+      const total = await this.occurrenceService.count(occurrenceCriteria);
+      if (cursor < total) {
+        recurringTransactionOccurrences = await this.fetchOffset(
+          (p) => this.occurrenceService.findAll(p, occurrenceCriteria),
           cursor,
           remaining
         );
@@ -176,6 +199,7 @@ export class InitInfoService {
       projectItems,
       labels,
       recurringTransactions,
+      recurringTransactionOccurrences,
     });
   }
 
@@ -186,6 +210,7 @@ export class InitInfoService {
     projectItems?: ProjectItem[];
     labels?: Label[];
     recurringTransactions?: RecurringTransaction[];
+    recurringTransactionOccurrences?: RecurringTransactionOccurrence[];
   }): InitInfo {
     const result = new InitInfo();
     result.wallets = partial.wallets ?? [];
@@ -194,6 +219,8 @@ export class InitInfoService {
     result.projectItems = partial.projectItems ?? [];
     result.labels = partial.labels ?? [];
     result.recurringTransactions = partial.recurringTransactions ?? [];
+    result.recurringTransactionOccurrences =
+      partial.recurringTransactionOccurrences ?? [];
     return result;
   }
 }

@@ -22,6 +22,7 @@ async function drainAll(service: InitInfoService, pageSize: number) {
     projectItems: [] as any[],
     labels: [] as any[],
     recurringTransactions: [] as any[],
+    recurringTransactionOccurrences: [] as any[],
   };
 
   let page = 1;
@@ -34,6 +35,9 @@ async function drainAll(service: InitInfoService, pageSize: number) {
     collected.projectItems.push(...info.projectItems);
     collected.labels.push(...info.labels);
     collected.recurringTransactions.push(...info.recurringTransactions);
+    collected.recurringTransactionOccurrences.push(
+      ...info.recurringTransactionOccurrences
+    );
 
     const allEmpty =
       info.wallets.length === 0 &&
@@ -41,7 +45,8 @@ async function drainAll(service: InitInfoService, pageSize: number) {
       info.projects.length === 0 &&
       info.projectItems.length === 0 &&
       info.labels.length === 0 &&
-      info.recurringTransactions.length === 0;
+      info.recurringTransactions.length === 0 &&
+      info.recurringTransactionOccurrences.length === 0;
 
     if (allEmpty) return collected;
     page++;
@@ -51,7 +56,7 @@ async function drainAll(service: InitInfoService, pageSize: number) {
 }
 
 function buildService(
-  counts: [number, number, number, number, number, number]
+  counts: [number, number, number, number, number, number, number?]
 ) {
   const wallets = Array.from({ length: counts[0] }, (_, i) => ({
     id: `wallet-${i}`,
@@ -72,13 +77,19 @@ function buildService(
     id: `recurring-tx-${i}`,
   }));
 
+  const recurringTransactionOccurrences = Array.from(
+    { length: counts[6] ?? 0 },
+    (_, i) => ({ id: `occurrence-${i}` })
+  );
+
   const service = new InitInfoService(
     fakeService(wallets) as any,
     fakeService(transactions) as any,
     fakeService(projects) as any,
     fakeService(projectItems) as any,
     fakeService(labels) as any,
-    fakeService(recurringTransactions) as any
+    fakeService(recurringTransactions) as any,
+    fakeService(recurringTransactionOccurrences) as any
   );
 
   return {
@@ -89,11 +100,14 @@ function buildService(
     projectItems,
     labels,
     recurringTransactions,
+    recurringTransactionOccurrences,
   };
 }
 
 describe("InitInfoService.getByUserId (full drain)", () => {
-  const scenarios: Array<[number, number, number, number, number, number]> = [
+  const scenarios: Array<
+    [number, number, number, number, number, number, number?]
+  > = [
     [3, 2, 4, 1, 5, 6],
     [0, 0, 0, 0, 0, 0],
     [1, 0, 0, 0, 0, 0],
@@ -106,6 +120,10 @@ describe("InitInfoService.getByUserId (full drain)", () => {
     [7, 7, 7, 7, 7, 7],
     [50, 37, 12, 99, 3, 21],
     [0, 0, 0, 0, 0, 50],
+    [3, 2, 4, 1, 5, 6, 9],
+    [0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 0, 0, 0, 3, 40],
+    [5, 5, 5, 5, 5, 5, 5],
   ];
   const pageSizes = [1, 2, 3, 5, 7, 10, 100];
 
@@ -120,6 +138,7 @@ describe("InitInfoService.getByUserId (full drain)", () => {
           projectItems,
           labels,
           recurringTransactions,
+          recurringTransactionOccurrences,
         } = buildService(counts);
 
         const collected = await drainAll(service, pageSize);
@@ -130,6 +149,9 @@ describe("InitInfoService.getByUserId (full drain)", () => {
         expect(collected.projectItems).toEqual(projectItems);
         expect(collected.labels).toEqual(labels);
         expect(collected.recurringTransactions).toEqual(recurringTransactions);
+        expect(collected.recurringTransactionOccurrences).toEqual(
+          recurringTransactionOccurrences
+        );
       });
     }
   }

@@ -5,6 +5,7 @@ import {
   ProjectItem,
   Label,
   RecurringTransaction,
+  RecurringTransactionOccurrence,
 } from "@wallio/entities";
 
 export class InitInfo {
@@ -14,4 +15,5 @@ export class InitInfo {
   projectItems: ProjectItem[];
   labels: Label[];
   recurringTransactions: RecurringTransaction[];
+  recurringTransactionOccurrences: RecurringTransactionOccurrence[];
 }
