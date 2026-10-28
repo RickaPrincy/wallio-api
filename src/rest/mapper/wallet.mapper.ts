@@ -44,6 +44,12 @@ export class WalletMapper {
       );
     }
 
-    return this.walletRepository.create({ ...restWallet, user });
+    // The client always pushes whole rows and leaves a cleared field out:
+    // null it here, or saving would keep the old value.
+    return this.walletRepository.create({
+      ...restWallet,
+      description: restWallet.description ?? null,
+      user,
+    });
   }
 }

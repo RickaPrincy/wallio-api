@@ -31,4 +31,14 @@ describe("createPagination", () => {
       skip: 0, // (3 - 1) * 0
     });
   });
+
+  it("should use an exact offset when given, wherever it falls", () => {
+    const pagination: PaginationParams = { page: 1, pageSize: 7, offset: 23 };
+    const result = createPagination(pagination);
+
+    expect(result).toEqual({
+      take: 7,
+      skip: 23,
+    });
+  });
 });

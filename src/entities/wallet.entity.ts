@@ -1,4 +1,5 @@
 import {
+  Index,
   Column,
   Entity,
   ManyToOne,
@@ -49,6 +50,7 @@ export class Wallet {
   @Column({ length: 3, default: "MGA" })
   currency: string;
 
+  @Index()
   @ManyToOne(() => User, (user) => user.wallets, {
     eager: true,
     nullable: false,

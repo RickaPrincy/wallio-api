@@ -53,14 +53,17 @@ export class TransactionMapper {
         }
         const label = restTransaction.labelId
           ? labels.find((label) => label.id === restTransaction.labelId)
-          : undefined;
+          : null;
         const recurringTransaction = restTransaction.recurringTransactionId
           ? ({
               id: restTransaction.recurringTransactionId,
             } as RecurringTransaction)
           : undefined;
+        // The client always pushes whole rows and leaves a cleared field
+        // out: null it here, or saving would keep the old value.
         return this.transactionRepository.create({
           ...restTransaction,
+          counterparty: restTransaction.counterparty ?? null,
           wallet,
           label,
           recurringTransaction,

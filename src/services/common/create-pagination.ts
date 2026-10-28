@@ -6,6 +6,6 @@ export function createPagination(
 ): Pick<FindManyOptions, "take" | "skip"> {
   return {
     take: pagination.pageSize,
-    skip: (pagination.page - 1) * pagination.pageSize,
+    skip: pagination.offset ?? (pagination.page - 1) * pagination.pageSize,
   };
 }

@@ -1,4 +1,5 @@
 import {
+  Index,
   Column,
   Entity,
   ManyToOne,
@@ -31,6 +32,7 @@ export class Project {
   @Column({ name: "finished_at", type: "timestamptz", nullable: true })
   finishedAt?: string;
 
+  @Index()
   @ManyToOne(() => User, {
     eager: true,
     nullable: false,

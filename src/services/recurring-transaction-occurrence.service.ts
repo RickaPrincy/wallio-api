@@ -29,9 +29,7 @@ export class RecurringTransactionOccurrenceService {
       repository: this.repository,
       criteria,
       pagination,
-      // id last: rows saved in one batch share their dates, the offset walk
-      // of the init needs a stable order.
-      order: { ...UPDATED_AT_CREATED_AT_ORDER_BY, id: "ASC" },
+      order: UPDATED_AT_CREATED_AT_ORDER_BY,
     });
   }
 

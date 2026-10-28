@@ -29,6 +29,13 @@ export class ProjectMapper {
   }
 
   async toDomain(restProject: RestProject, user: User): Promise<DomainProject> {
-    return this.projectRepository.create({ ...restProject, user });
+    // The client always pushes whole rows and leaves a cleared field out:
+    // null it here, or saving would keep the old value.
+    return this.projectRepository.create({
+      ...restProject,
+      plannedAmount: restProject.plannedAmount ?? null,
+      finishedAt: restProject.finishedAt ?? null,
+      user,
+    });
   }
 }

@@ -16,6 +16,10 @@ export class PaginationParams {
   @Min(1)
   @Max(MAX_ITEM_PER_PAGE)
   pageSize: number;
+
+  // Internal only (never read from the query string): an exact offset that
+  // doesn't fall on a page boundary, used instead of page when set.
+  offset?: number;
 }
 
 export const Pagination = createParamDecorator(

@@ -47,10 +47,15 @@ export class ProjectItemMapper {
     )!;
     const transaction = restItem.transactionId
       ? ({ id: restItem.transactionId } as Transaction)
-      : undefined;
+      : null;
 
+    // The client always pushes whole rows and leaves a cleared field out:
+    // null it here, or saving would keep the old value.
     return this.projectItemRepository.create({
       ...restItem,
+      icon: restItem.icon ?? null,
+      actualAmount: restItem.actualAmount ?? null,
+      executedAt: restItem.executedAt ?? null,
       project,
       transaction,
     });

@@ -1,4 +1,5 @@
 import {
+  Index,
   Column,
   Entity,
   ManyToOne,
@@ -23,6 +24,7 @@ export class Label {
   @Column()
   color: string;
 
+  @Index()
   @ManyToOne(() => User, {
     eager: true,
     nullable: false,

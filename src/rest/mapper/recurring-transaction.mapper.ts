@@ -174,10 +174,16 @@ export class RecurringTransactionMapper {
     const wallet = wallets.find((wallet) => wallet.id === restItem.walletId)!;
     const label = restItem.labelId
       ? labels.find((label) => label.id === restItem.labelId)
-      : undefined;
+      : null;
 
+    // The client always pushes whole rows and leaves a cleared field out:
+    // null it here, or saving would keep the old value.
     return this.recurringTransactionRepository.create({
       ...restItem,
+      counterparty: restItem.counterparty ?? null,
+      dayOfMonth: restItem.dayOfMonth ?? null,
+      month: restItem.month ?? null,
+      endAt: restItem.endAt ?? null,
       notificationTimes,
       weekDays,
       months,

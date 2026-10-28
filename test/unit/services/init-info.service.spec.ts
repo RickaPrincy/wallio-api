@@ -4,10 +4,18 @@ import { InitInfoService } from "@wallio/services";
 // relies on, backed by a plain in-memory array — no DB/Docker required.
 function fakeService<T>(items: T[]) {
   return {
-    findAll: jest.fn(async (pagination: { page: number; pageSize: number }) => {
-      const start = (pagination.page - 1) * pagination.pageSize;
-      return items.slice(start, start + pagination.pageSize);
-    }),
+    findAll: jest.fn(
+      async (pagination: {
+        page: number;
+        pageSize: number;
+        offset?: number;
+      }) => {
+        // Same skip as createPagination: an exact offset when given.
+        const start =
+          pagination.offset ?? (pagination.page - 1) * pagination.pageSize;
+        return items.slice(start, start + pagination.pageSize);
+      }
+    ),
     count: jest.fn(async () => items.length),
   };
 }

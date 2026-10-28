@@ -31,18 +31,15 @@ export class InitInfoService {
   ) {}
 
   // Fetches exactly `take` items starting at offset `skip` within a single
-  // entity type. `findAll` only accepts {page, pageSize} (offset = (page-1)*
-  // pageSize), which can't express an arbitrary offset directly, so this
-  // over-fetches from the start and slices locally — correct regardless of
-  // whether `skip` lines up with a page boundary.
+  // entity type, in one bounded query: loading everything before the offset
+  // made the whole init quadratic in the number of rows.
   private async fetchOffset<T>(
     finder: (pagination: PaginationParams) => Promise<T[]>,
     skip: number,
     take: number
   ): Promise<T[]> {
     if (take <= 0) return [];
-    const overFetched = await finder({ page: 1, pageSize: skip + take });
-    return overFetched.slice(skip, skip + take);
+    return await finder({ page: 1, pageSize: take, offset: skip });
   }
 
   // Walks the virtual concatenation wallets++transactions++projects++

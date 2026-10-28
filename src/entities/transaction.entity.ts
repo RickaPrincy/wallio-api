@@ -46,6 +46,7 @@ export class Transaction {
   @Column({ type: "enum", enum: TransactionType, nullable: true })
   type?: TransactionType;
 
+  @Index()
   @ManyToOne(() => Label, {
     eager: true,
     nullable: true,
@@ -59,6 +60,7 @@ export class Transaction {
   // The recurring rule this transaction was generated from, if any. The FK
   // lives here (the "many" side): one rule produces many transactions over
   // time, so RecurringTransaction itself never points back at any of them.
+  @Index()
   @ManyToOne("RecurringTransaction", {
     eager: false,
     nullable: true,

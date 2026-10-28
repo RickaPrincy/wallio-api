@@ -1,4 +1,5 @@
 import {
+  Index,
   Column,
   Entity,
   ManyToOne,
@@ -38,6 +39,7 @@ export class ProjectItem {
   @Column({ nullable: true })
   icon?: string;
 
+  @Index()
   @ManyToOne(() => Project, {
     eager: false,
     nullable: false,
@@ -45,6 +47,7 @@ export class ProjectItem {
   })
   project: Project;
 
+  @Index()
   @ManyToOne(() => Transaction, {
     eager: true,
     nullable: true,

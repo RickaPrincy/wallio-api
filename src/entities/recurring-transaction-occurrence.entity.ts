@@ -44,6 +44,7 @@ export class RecurringTransactionOccurrence {
   @Column({ type: "enum", enum: OccurrenceStatus })
   status: OccurrenceStatus;
 
+  @Index()
   @Column({ name: "transaction_id", nullable: true })
   transactionId?: string | null;
 
