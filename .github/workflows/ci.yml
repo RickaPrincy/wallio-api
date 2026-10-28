@@ -10,6 +10,8 @@ on:
 jobs:
   style:
     runs-on: ubuntu-latest
+    # A hung npm install must fail fast instead of running for hours.
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,9 +20,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
+          # Reuses downloaded packages between runs.
+          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Run Prettier
         run: npm run format:check
@@ -32,6 +36,8 @@ jobs:
         run: npm run build
   test-cov:
     runs-on: ubuntu-latest
+    # A hung npm install must fail fast instead of running for hours.
+    timeout-minutes: 15
     env:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
@@ -45,9 +51,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.4.x
+          # Reuses downloaded packages between runs.
+          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --no-audit --no-fund
 
       - name: Run unit test with coverage
         run: npm run test:cov
